@@ -18,15 +18,24 @@
 
         <div id="serverlist">
           <ul data-bind="foreach: servers">
-            <li data-bind="html: server_name"></li>
+            <li data-bind="html: $data.server_name"></li>
           </ul>
-          <button type="button" id="add_server_btn" data-toggle="modal" data-target="#myModal">&plus;</button>
+          <button type="button" id="add_server_btn" data-toggle="modal" data-target="#server_modal">&plus;</button>
         </div>
 
-        <div id="channellist">
+        <div id="channellist" data-bind="with: selected_server">
           <h2 id="channellist-header">Channels</h2>
-          <div id="channellist-content"></div>
+          <div id="channellist-content" data-bind="foreach: channels">
+            <li>
+              <div data-bind="click: $parent.selectChannel">
+              <!-- <a> -->
+                <span>#</span><span data-bind="html: $data.channel_name"></span>
+              </div>
+            </li>
+          </div>
+          <button type="button" id="add_channel_btn" data-toggle="modal" data-target="#channel_modal">&plus;</button>
         </div>
+
         <div id="channel">
           <h2 id="channel-header"></h2>
           <div id="channel-content"></div>
@@ -35,7 +44,7 @@
       </div>
     </div>
 
-    <div class="modal fade" id="myModal" data-keyboard="false" data-backdrop="static">
+    <div class="modal fade" id="server_modal" data-keyboard="false" data-backdrop="static">
       <div class="modal-dialog" role="document">
         <div class="modal-content">
           <div class="modal-header">
@@ -45,8 +54,34 @@
             <h4 class="modal-title">Add new server</h4>
           </div>
           <div class="modal-body">
-            <input type="text" name="nick_name" placeholder="Nick name ...">@
-            <input type="text" name="server_addr" placeholder="Server address ...">
+            <div><input type="text" name="server_name" placeholder="Server name" size="44"></div>
+            <div>
+              <input type="text" name="nick_name" placeholder="Nick name ...">@
+              <input type="text" name="server_addr" placeholder="Server address ...">
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-primary" id="add_server">Add new server</button>
+          </div>
+        </div><!-- /.modal-content -->
+      </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+
+    <div class="modal fade" id="channel_modal" data-keyboard="false" data-backdrop="static">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+            <h4 class="modal-title">Add new server</h4>
+          </div>
+          <div class="modal-body">
+            <div><input type="text" name="server_name" placeholder="Server name" size="44"></div>
+            <div>
+              <input type="text" name="nick_name" placeholder="Nick name ...">@
+              <input type="text" name="server_addr" placeholder="Server address ...">
+            </div>
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-primary" id="add_server">Add new server</button>
@@ -65,7 +100,12 @@
 
     require('../assets/bootstrap-4.0.0alpha.min.js')
 
-    require('./events.js')
+    var ifs = require('./interface.js')
+
+    $(document).ready(function() {
+      var interface = new ifs.InterfaceModel(ko);
+      ko.applyBindings(interface /*, document.getElementById("serverlist") */);
+    });
 
     </script>
 </html>

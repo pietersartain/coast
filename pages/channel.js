@@ -1,13 +1,25 @@
-var moment = require('moment');
+/**
+ * The Channel class contains ...
+ */
 
-exports.join = function(channel) {
+exports.ChannelModel = ChannelModel;
+function ChannelModel(channel_name, irc_client) {
+  var self = this;
+
+  self.channel_name = channel_name;
+  self.irc_client = irc_client;
+
+  self.moment = require('moment');
+  self.appendable = 0;
+
+  self.join = function(channel) {
     // This will need to add to some non-volatile list
-    jQuery("#channellist-content").append("<li id='" + channel + "'><span>#</span>" + channel + "</li>");
-    jQuery("#channel-header").append(channel);
-};
+    $("#channellist-content").append("<li id='" + channel + "'><span>#</span>" + channel + "</li>");
+    $("#channel-header").append(channel);
+  };
 
-exports.add_message = function(from, message) {
-    var last_poster = jQuery(".message-name:last").text();
+  self.add_message = function(from, message) {
+    var last_poster = $(".message-name:last").text();
 
     if (from == last_poster && appendable) {
         append_new_message(message);
@@ -16,43 +28,38 @@ exports.add_message = function(from, message) {
         reset_appendable();
     }
     updateScroll();
-};
+  };
 
-var appendable = 0;
-
-function reset_appendable() {
+  // Private functions
+  function reset_appendable() {
     clearTimeout();
     appendable = 1
     setTimeout(function(){
         appendable = 0;
     }, 1000 * 180); // 3 minutes
-}
+  };
 
-function append_new_message(message) {
-    var last_message = jQuery(".message:last");
+  function append_new_message(message) {
+    var last_message = $(".message:last");
     last_message.append("<div class='message-content'>" + message + "</div>");        
-}
+  };
 
-function post_new_message(from, message) {
+  function post_new_message(from, message) {
     var now = moment().format('h:mm A');
-    var channel_content = jQuery("#channel-content");
+    var channel_content = $("#channel-content");
     channel_content.append(" \
     <div class='message'> \
         <span class='message-name'>" + from + "</span> \
         <span class='message-date'>" + now + "</span> \
         <div class='message-content'>" + message + "</div> \
     </div>");
-}
+  };
 
-// var scrolled = false;
-function updateScroll(){
-    jQuery('html,body').animate({ 
-       scrollTop: jQuery(document).height()-jQuery(window).height()},
+  function updateScroll(){
+    $('html,body').animate({ 
+       scrollTop: $(document).height()-$(window).height()},
        300 // ms - time to scroll
     );
-    // jQuery('html,body').scrollTop(jQuery(document).height()-jQuery(window).height())
-}
+  };
 
-// jQuery("html").bind('scroll', function(){
-//     scrolled=true;
-// });
+};

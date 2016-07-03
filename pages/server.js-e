@@ -3,34 +3,79 @@
  * server.
  */
 
-function Server(nick_name, ip_addr) {
+exports.ServerModel = ServerModel;
+function ServerModel(server_name, nick_name, server_addr,ko) {
   var self = this;
 
-  self.nick_name= "pietesartain";
-  self.channel_name = "test";
-  self.ip_addr = '192.168.0.64';
+  self.db = require('diskdb');
+  self.db.connect('./db/', ['channels']);
 
-  self.channels = [];
+  var chnl = require('./channel.js')
+
+  // self.nick_name= "pietesartain";
+  // self.channel_name = "test";
+  // self.ip_addr = '192.168.0.64';
 
 // if (!debug) {
 //   nick_name = "Piete";
 //   ip_addr = "irc.soton.smoothwall.net";
 // }
 
-  self.irc = require('irc');
+
+  self.server_name = server_name;
+  self.nick_name = nick_name;
+  self.server_addr = server_addr;
+
+  self.debug = 0;
+
+  self.channels = ko.observableArray(
+    [{channel_name : "a"},
+    {channel_name : "b"},
+    {channel_name : "c"}]
+  );
+
+  self.selected_channel = ko.observable({channel_name : "c"});
+
+  self.irc = require('irc')
 
   // Connect to the server
-  self.client = new irc.Client(self.ip_addr, self.nick_name,
+  var client = new self.irc.Client(self.ip_addr, self.nick_name,
       {
         channels: [],
-      });    
+      });
 
-  self.join = function(channel_name) {
-    // self.channels.push(new Channel());
-  }
+  self.joinChannel = function(channel_name) {
+    var new_chnl = new chnl.Channel(channel_name, client)
+    self.channels.push(new_chnl);
+    self.selected_channel = new_chnl;
+  };
+
+  self.selectChannel = function(channel_name) {
+    console.log(channel_name);
+  };
+
+  self.loadChannels = function() {
+    for (let channel of self.db.channels.find({server_name:this.server_name})) {
+      self.add_server(
+        server.server_name,
+        server.nick_name,
+        server.server_addr);
+      // console.log(server);
+    }
+  };
+
+  self.saveChannel = function(channel_name) {
+    var channel_details = {channel_name:channel_name};
+    self.db.servers.update(
+        {server_name:self.server_name}, // query
+        channel_details, // data
+        {multi:false, upsert: false} // options
+      );
+  };
 
 // This is currently uninitialised
 // var channel = require('./channel.js')
+
 
 // ****************************************************************************
 // IRC event listeners
@@ -38,27 +83,29 @@ function Server(nick_name, ip_addr) {
 
   client.addListener('registered', function(message) {
 
-    // setTimeout(function(){
-    client.list();
-    // client.send('LIST');
-    // },300);
+    // // setTimeout(function(){
+    // client.list();
+    // // client.send('LIST');
+    // // },300);
 
-    // Rejoin all the rooms
-    client.join("#" + channel_name);
+    // // Rejoin all the rooms
+    // client.join("#" + channel_name);
 
-    client.list();
+    // client.list();
 
-    // client.whois("pesartain", function(info){
-    //   console.log("whois", info);
-    // });
+    // // client.whois("pesartain", function(info){
+    // //   console.log("whois", info);
+    // // });
 
-    channel.join(channel_name);
+    // channel.join(channel_name);
+
+    self.joinChannel(self.channel_name);
 
   });
 
   client.addListener('channellist_item', function(info) {
     console.log("channellist_item: ", info);
-    $("#channellist-content").append("<li id='" + info + "'><span>#</span>" + info + "</li>");
+    // interface.append(info);
   });
 
   client.addListener('channellist', function(channels) {
@@ -68,13 +115,14 @@ function Server(nick_name, ip_addr) {
   client.addListener('message', function (from, to, message) {
     // console.log(from + ' => ' + to + ': ' + message);
     if (to == nick_name) {
-      // pm
+      // Private message
     } else {
-      channel.add_message(from, message);
+      // Channel message
+      // channel.add_message(from, message);
     }
   });
 
-  if (debug) {
+  if (self.debug) {
     client.addListener('raw', function(message) {
       console.log('raw: ', message);
     });
@@ -84,4 +132,71 @@ function Server(nick_name, ip_addr) {
     console.log('error: ', message);
   });
 
-}
+};
+
+
+/*
+var ServerModel = function() {
+  var self = this;
+
+  // Editable data
+  self.servers = ko.observableArray([
+    {"server_name":"a","nick_name":"aa"},
+    {"server_name":"b","nick_name":"bb"}
+  ]);
+
+  // this.db = require('diskdb');
+  // this.db.connect('./db/', ['servers']);
+
+  self.getServerList = function(db) {
+  //   var servers = this.db.servers.find();
+  //   // ko.mapping.fromJS(servers, {}, this.servers);
+  }
+
+  self.countServers = function(db) {
+  //   return this.db.servers.count();
+    return 0;
+  }
+
+  // this.exrciseList = function(data, status, jqxhr) {
+  //   ko.mapping.fromJS(data, {}, this.exercises);
+
+  //   $("[data-drag='exercise']").children("li").each(function() {
+  //     $(this).draggable({ opacity: 0.7, helper: "clone" });
+  //   });
+  // };
+
+  // // This is part of the constructor
+  // this.refreshExercises = function() {
+  //   $.ajax({
+  //     context: this,
+  //     'url': '/api/exercises',
+  //     'type': 'get',
+  //     'success': this.exerciseList,
+  //     'error': function() {}
+  //   });
+  // };
+
+  self.addServer = function(server_name, nick_name, server_addr) {
+    // var server_details = {server_name : server_name, nick_name : nick_name, server_addr : server_addr};
+    // this.servers.push(server_details);
+    // this.db.servers.save(server_details);
+  }
+
+  // this.insertExercise = function(form) {
+  //     $.ajax({
+  //       context: this,
+  //       'url': '/api/exercises', // form.attr('action')
+  //       'type': 'post', // form.attr('method')
+  //       'data': form.serialize(),
+  //       'success': this.exerciseList,
+  //       'error': function() {}
+  //     });
+  // };
+
+  // this.refreshExercises();
+
+  // this.getServerList();
+};
+
+*/
