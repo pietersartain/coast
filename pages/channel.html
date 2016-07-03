@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+
+    <link rel="stylesheet" href="../assets/bootstrap-4.0.0alpha.min.css">
+    <link rel="stylesheet" href="channel.css">
+
+    <title>Coast</title>
+
+  </head>
+  <body>
+
+    <div class="container-fluid">
+      <div class="row">
+
+        <div id="serverlist">
+          <ul data-bind="foreach: servers">
+            <li data-bind="html: server_name"></li>
+          </ul>
+          <button type="button" id="add_server_btn" data-toggle="modal" data-target="#myModal">&plus;</button>
+        </div>
+
+        <div id="channellist">
+          <h2 id="channellist-header">Channels</h2>
+          <div id="channellist-content"></div>
+        </div>
+        <div id="channel">
+          <h2 id="channel-header"></h2>
+          <div id="channel-content"></div>
+          <textarea id="channel-input" class="input"></textarea>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal fade" id="myModal" data-keyboard="false" data-backdrop="static">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+            <h4 class="modal-title">Add new server</h4>
+          </div>
+          <div class="modal-body">
+            <input type="text" name="nick_name" placeholder="Nick name ...">@
+            <input type="text" name="server_addr" placeholder="Server address ...">
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-primary" id="add_server">Add new server</button>
+          </div>
+        </div><!-- /.modal-content -->
+      </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+
+  </body>
+
+  <script>
+    // You can also require other files to run in this process
+    var $, jQuery, ko;
+    $ = jQuery = require('jquery')
+    ko = require('knockout')
+
+    require('../assets/bootstrap-4.0.0alpha.min.js')
+
+    require('./events.js')
+
+    </script>
+</html>

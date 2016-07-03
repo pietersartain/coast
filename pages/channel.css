@@ -1,0 +1,104 @@
+@import 'https://fonts.googleapis.com/css?family=Lato:300,400,900';
+
+body {
+    font-family: 'Lato', sans-serif;
+    height: 100%;
+    width: 100%;
+}
+
+/* serverlist */
+#serverlist {
+    position: fixed;
+    top: 0;
+    width: 40px;
+    padding: 7px;
+    background-color: rgb(51, 39, 50);
+    color: #ab9ba9;
+    height: 100%;
+}
+
+#add_server_btn {
+    color: rgb(163, 158, 162);
+    background-color: transparent;
+    border: 0;
+}
+
+#add_server_btn:hover {
+    background-color: rgb(71, 61, 70);
+}
+
+/* channellist */
+#channellist {
+    position: fixed;
+    top: 0;
+    width: 120px;
+    padding: 15px;
+    background-color: #4d394b;
+    color: #ab9ba9;
+    height: 100%;
+    margin-left: 40px;
+}
+
+#channellist-header {
+    text-transform: uppercase;
+    font-size: 0.8rem;
+}
+
+/* channel */
+#channel {
+    min-height: 100%;
+    margin-left: 160px;
+    width: 100%;
+}
+
+#channel-header::before {
+    content: "#";
+}
+
+#channel-header {
+    position: fixed;
+    top: 0;
+    height: 40px;
+    width: 100%;
+    background-color: #FFF;
+    font-size: 0.9rem;
+    border: 0px solid #e0e0e0;
+    border-bottom-width: 1px;
+    padding: 10px;
+}
+
+#channel-content {
+    margin-top: 40px;
+    margin-bottom: 100px;
+}
+
+#channel-input {
+    display: block;
+    position: fixed;
+    bottom: 15px;
+    border: 2px solid #e0e0e0;
+    padding: 9px;
+    border-radius: 6px;
+    height: 48px;
+    width: calc(100% - 185px);
+    max-height: 160px;
+    max-width: 100%;
+    margin-left: 15px;
+    resize: none;
+}
+
+/* message */
+.message {
+    font-weight: 400;
+}
+
+.message-name {
+    font-weight: bold;
+    font-size: 15px;
+}
+
+.message-date {
+    font-weight: 300;
+    color: silver;
+    font-size: 12px;
+}
