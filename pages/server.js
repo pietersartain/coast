@@ -10,20 +10,26 @@ function Server(nick_name, ip_addr) {
   self.channel_name = "test";
   self.ip_addr = '192.168.0.64';
 
+  self.channels = [];
+
 // if (!debug) {
 //   nick_name = "Piete";
 // }
 
   self.irc = require('irc');
 
-// Connect to the server
-var client = new irc.Client(ip_addr, nick_name,
-  {
-    channels: [],
-  });
+  // Connect to the server
+  self.client = new irc.Client(self.ip_addr, self.nick_name,
+      {
+        channels: [],
+      });    
+
+  self.join = function(channel_name) {
+    // self.channels.push(new Channel());
+  }
 
 // This is currently uninitialised
-var channel = require('./channel.js')
+// var channel = require('./channel.js')
 
 // ****************************************************************************
 // IRC event listeners
