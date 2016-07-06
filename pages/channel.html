@@ -23,12 +23,11 @@
           <button type="button" id="add_server_btn" data-toggle="modal" data-target="#server_modal">&plus;</button>
         </div>
 
-        <div id="channellist" data-bind="with: selected_server">
+        <div id="channellist" data-bind="if: selected_server().connected">
           <h2 id="channellist-header">Channels</h2>
-          <div id="channellist-content" data-bind="foreach: channels">
+          <div id="channellist-content" data-bind="foreach: selected_server().channels">
             <li>
               <div data-bind="click: $parent.selectChannel">
-              <!-- <a> -->
                 <span>#</span><span data-bind="html: $data.channel_name"></span>
               </div>
             </li>
@@ -74,17 +73,21 @@
             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
               <span aria-hidden="true">&times;</span>
             </button>
-            <h4 class="modal-title">Add new server</h4>
+            <h4 class="modal-title">Join new channel</h4>
           </div>
           <div class="modal-body">
-            <div><input type="text" name="server_name" placeholder="Server name" size="44"></div>
             <div>
-              <input type="text" name="nick_name" placeholder="Nick name ...">@
-              <input type="text" name="server_addr" placeholder="Server address ...">
+              <input type="text" name="channel_name" placeholder="New channel name ..." size="44">
+              <button type="button" class="btn btn-primary" id="create_channel">Create channel</button>
+            </div>
+            <div>
+              <ul data-bind="foreach: selected_server.getChannelList">
+                <li data-bind="click: selected_server.joinChannel; html: $data.server_name"></li>
+              </ul>
             </div>
           </div>
           <div class="modal-footer">
-            <button type="button" class="btn btn-primary" id="add_server">Add new server</button>
+            
           </div>
         </div><!-- /.modal-content -->
       </div><!-- /.modal-dialog -->

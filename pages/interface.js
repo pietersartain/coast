@@ -9,20 +9,22 @@ function InterfaceModel(ko) {
 
   var input_box = $('.input');
 
-  self.servers = ko.observableArray(
+  self.servers = ko.observableArray([]
     // [{"server_name":"a","nick_name":"aa"},
     // {"server_name":"b","nick_name":"bb"}]
   );
 
   self.selected_server = ko.observable();
 
+  self.connected = ko.observable(true);
+
   // ...
 
   // Server stuff
   self.addServer = function(server_name, nick_name, server_addr) {
-    var new_srv = new srv.ServerModel(server_name, nick_name, server_addr, ko, db);
+    var new_srv = new srv.ServerModel(server_name, nick_name, server_addr, ko, this.db);
     self.servers.push(new_srv);
-    self.selected_server = ko.observable(new_srv);
+    self.selected_server(new_srv);
   };
 
   self.loadServers = function() {
@@ -102,13 +104,18 @@ function InterfaceModel(ko) {
     var server_addr = $("input[name='server_addr']").val();
 
     if ( (nick_name != '') | (server_addr != '' ) ) {
-      // Add to model
       self.addServer(server_name, nick_name, server_addr);
       self.saveServer(server_name, nick_name, server_addr);
       $("#server_modal").modal('hide');
     }
+  });
 
-    // console.log(nick_name, server_addr, nick_name == '', nick_name != '');
+  $("#create_channel").bind("click", function(e){
+    var channel_name = $("input[name='channel_name']").val();
+
+    if (channel_name != '') {
+      self.selected_server().joinChannel(channel_name);
+    }
   });
 
 };

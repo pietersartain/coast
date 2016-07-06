@@ -4,11 +4,10 @@
  */
 
 exports.ServerModel = ServerModel;
-function ServerModel(server_name, nick_name, server_addr,ko) {
+function ServerModel(server_name, nick_name, server_addr,ko, db) {
   var self = this;
 
-  self.db = require('diskdb');
-  self.db.connect('./db/', ['channels']);
+  self.db = db;
 
   var chnl = require('./channel.js')
 
@@ -27,26 +26,35 @@ function ServerModel(server_name, nick_name, server_addr,ko) {
 
   self.debug = 0;
 
-  self.channels = ko.observableArray(
-    [{channel_name : "a"},
-    {channel_name : "b"},
-    {channel_name : "c"}]
+  self.channels = ko.observableArray([]
+    // [{channel_name : "a"},
+    // {channel_name : "b"},
+    // {channel_name : "c"}]
   );
 
-  self.selected_channel = ko.observable({channel_name : "c"});
+  self.selected_channel = ko.observable();
+
+  self.connected = ko.observable(false);
 
   self.irc = require('irc')
 
   // Connect to the server
-  var client = new self.irc.Client(self.ip_addr, self.nick_name,
+  var client = new self.irc.Client(self.server_addr, self.nick_name,
       {
         channels: [],
       });
 
+  self.getChannelList = function() {
+    return [];
+  };
+
   self.joinChannel = function(channel_name) {
+    console.log(channel_name);
+    return 0;
+
     var new_chnl = new chnl.Channel(channel_name, client)
     self.channels.push(new_chnl);
-    self.selected_channel = new_chnl;
+    self.selected_channel(new_chnl);
   };
 
   self.selectChannel = function(channel_name) {
@@ -55,21 +63,17 @@ function ServerModel(server_name, nick_name, server_addr,ko) {
 
   self.loadChannels = function() {
     for (let channel of self.db.channels.find({server_name:this.server_name})) {
-      self.add_server(
-        server.server_name,
-        server.nick_name,
-        server.server_addr);
-      // console.log(server);
+      // self.add_server(
+      //   server.server_name,
+      //   server.nick_name,
+      //   server.server_addr);
+      console.log(channel);
     }
   };
 
   self.saveChannel = function(channel_name) {
-    var channel_details = {channel_name:channel_name};
-    self.db.servers.update(
-        {server_name:self.server_name}, // query
-        channel_details, // data
-        {multi:false, upsert: false} // options
-      );
+    var channel_details = {server_name:this.server_name, channel_name: channel_name};
+    self.db.servers.save(channel_details);
   };
 
 // This is currently uninitialised
@@ -98,7 +102,9 @@ function ServerModel(server_name, nick_name, server_addr,ko) {
 
     // channel.join(channel_name);
 
-    self.joinChannel(self.channel_name);
+    // self.joinChannel(self.channel_name);
+
+    self.connected(true);
 
   });
 
