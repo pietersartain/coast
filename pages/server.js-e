@@ -50,7 +50,7 @@ function ServerModel(server_name, nick_name, server_addr,ko, db) {
   };
 
   self.joinChannel = function(channel_name) {
-    console.log(channel_name);
+    console.log("joinChannel: ", channel_name);
     return 0;
 
     var new_chnl = new chnl.Channel(channel_name, client)
@@ -76,6 +76,17 @@ function ServerModel(server_name, nick_name, server_addr,ko, db) {
     var channel_details = {server_name:this.server_name, channel_name: channel_name};
     self.db.servers.save(channel_details);
   };
+
+  self.createChannel = function() {
+    var channel_name = $("input[name='channel_name']");
+
+    if (channel_name != '') {
+      self.joinChannel(channel_name.val());
+
+      channel_name.val("");
+      $("#channel_modal").modal('hide');
+    }
+  }
 
 // This is currently uninitialised
 // var channel = require('./channel.js')

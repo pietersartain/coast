@@ -47,6 +47,22 @@ function InterfaceModel(ko) {
   };
 
 
+  self.addServerBind = function() {
+    var server_name = $("input[name='server_name']");
+    var nick_name = $("input[name='nick_name']");
+    var server_addr = $("input[name='server_addr']");
+
+    if ( (nick_name.val() != '') | (server_addr.val() != '' ) ) {
+      self.addServer(server_name.val(), nick_name.val(), server_addr.val()  );
+      self.saveServer(server_name.val(), nick_name.val(), server_addr.val() );
+
+      server_name.val("");
+      nick_name.val("");
+      server_addr.val("");
+      $("#server_modal").modal('hide');
+    }
+  };
+
   // Channel stuff
   self.append_msg = function(info) {
     $("#channellist-content").append("<li id='" + info + "'><span>#</span>" + info + "</li>");
@@ -97,25 +113,5 @@ function InterfaceModel(ko) {
   // input_box.bind("ctrlEnterKey", function(e){
   //   input_box.height(input_box.height()+input_box.height());
   // });
-
-  $("#add_server").bind("click", function(e){
-    var server_name = $("input[name='server_name']").val();
-    var nick_name = $("input[name='nick_name']").val();
-    var server_addr = $("input[name='server_addr']").val();
-
-    if ( (nick_name != '') | (server_addr != '' ) ) {
-      self.addServer(server_name, nick_name, server_addr);
-      self.saveServer(server_name, nick_name, server_addr);
-      $("#server_modal").modal('hide');
-    }
-  });
-
-  $("#create_channel").bind("click", function(e){
-    var channel_name = $("input[name='channel_name']").val();
-
-    if (channel_name != '') {
-      self.selected_server().joinChannel(channel_name);
-    }
-  });
 
 };

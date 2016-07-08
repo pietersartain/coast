@@ -60,7 +60,7 @@
             </div>
           </div>
           <div class="modal-footer">
-            <button type="button" class="btn btn-primary" id="add_server">Add new server</button>
+            <button type="button" class="btn btn-primary" id="add_server" data-bind="click: addServerBind">Add new server</button>
           </div>
         </div><!-- /.modal-content -->
       </div><!-- /.modal-dialog -->
@@ -78,7 +78,7 @@
           <div class="modal-body">
             <div>
               <input type="text" name="channel_name" placeholder="New channel name ..." size="44">
-              <button type="button" class="btn btn-primary" id="create_channel">Create channel</button>
+              <button type="button" class="btn btn-primary" id="create_channel" data-bind="click: selected_server().createChannel">Create channel</button>
             </div>
             <div>
               <ul data-bind="foreach: selected_server.getChannelList">
