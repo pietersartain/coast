@@ -51,7 +51,7 @@ function ServerModel(server_name, nick_name, server_addr, ko, db) {
   self.joinChannel = function(channel_name) {
     console.log("joinChannel: ", channel_name);
 
-    var new_chnl = new chnl.ChannelModel(channel_name, client, ko)
+    var new_chnl = new chnl.ChannelModel(channel_name, nick_name, client, ko)
     self.channels.push(new_chnl);
     self.selected_channel(new_chnl);
   };
@@ -128,7 +128,15 @@ function ServerModel(server_name, nick_name, server_addr, ko, db) {
       // Private message
     } else {
       // Channel message
-      // channel.add_message(from, message);
+      to = to.substr(1);
+      var cidx = self.channels().findIndex(function(element, index, array){
+        return element.channel_name() === to;
+      });
+
+      if (cidx != -1) {
+        // self.channels()[cidx].addMessage(from, message);
+        self.selected_channel().addMessage(from, message);
+      }
     }
   });
 

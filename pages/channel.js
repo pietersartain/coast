@@ -3,12 +3,14 @@
  */
 
 exports.ChannelModel = ChannelModel;
-function ChannelModel(channel_name, client, ko) {
+function ChannelModel(channel_name, nick_name, client, ko) {
   var self = this;
 
   self.channel_name = ko.observable(channel_name);
+  self.nick_name = nick_name;
+  self.messages = ko.observableArray([]);
 
-  self.moment = require('moment');
+  self.moment = require('moment')
   self.appendable = 0;
 
   self.sendMessage = function(d, e) {
@@ -27,8 +29,7 @@ function ChannelModel(channel_name, client, ko) {
       if (say_val != '') {
 
         self.say(say_val);
-  //       // channel.append_msg(nick_name, say_val)
-        console.log(say_val);
+        self.addMessage(self.nick_name, say_val)
 
         input_box.val('');
       }
@@ -44,10 +45,13 @@ function ChannelModel(channel_name, client, ko) {
     client.say("#" + self.channel_name(),say_val);
   };
 
-  self.add_message = function(from, message) {
-    var last_poster = $(".message-name:last").text();
+  self.addMessage = function(from, message) {
+    var last_poster;
+    if (self.messages().length > 0) {
+        last_poster = self.messages()[self.messages().length - 1].from; //$(".message-name:last").text();
+    }
 
-    if (from == last_poster && appendable) {
+    if (from == last_poster && self.appendable) {
         append_new_message(message);
     } else {
         post_new_message(from, message);
@@ -59,26 +63,24 @@ function ChannelModel(channel_name, client, ko) {
   // Private functions
   function reset_appendable() {
     clearTimeout();
-    appendable = 1
+    self.appendable = 1
     setTimeout(function(){
         appendable = 0;
     }, 1000 * 180); // 3 minutes
   };
 
   function append_new_message(message) {
-    var last_message = $(".message:last");
-    last_message.append("<div class='message-content'>" + message + "</div>");        
+    self.messages()[self.messages().length - 1].fragments.push(message);
   };
 
   function post_new_message(from, message) {
-    var now = moment().format('h:mm A');
-    var channel_content = $("#channel-content");
-    channel_content.append(" \
-    <div class='message'> \
-        <span class='message-name'>" + from + "</span> \
-        <span class='message-date'>" + now + "</span> \
-        <div class='message-content'>" + message + "</div> \
-    </div>");
+    var now = self.moment().format('h:mm A');
+
+    self.messages.push({
+        from: from,
+        when: now,
+        fragments: ko.observableArray([message])
+    });
   };
 
   function updateScroll(){
