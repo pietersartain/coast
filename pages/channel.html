@@ -35,10 +35,12 @@
           <button type="button" id="add_channel_btn" data-toggle="modal" data-target="#channel_modal">&plus;</button>
         </div>
 
-        <div id="channel">
-          <h2 id="channel-header"></h2>
+        <div id="channel" data-bind="with: selected_server().selected_channel()">
+          <h2 id="channel-header" data-bind="html: channel_name"></h2>
           <div id="channel-content"></div>
-          <textarea id="channel-input" class="input"></textarea>
+          <textarea id="channel-input" class="input"
+            data-bind="event: { keyup: sendMessage }"
+            ></textarea>
         </div>
       </div>
     </div>

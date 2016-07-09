@@ -5,9 +5,7 @@ function InterfaceModel(ko) {
   var srv = require('./server.js')
   
   self.db = require('diskdb');
-  self.db.connect('./db/', ['servers']);
-
-  var input_box = $('.input');
+  self.db.connect('./db/', ['servers', 'channels']);
 
   self.servers = ko.observableArray([]
     // [{"server_name":"a","nick_name":"aa"},
@@ -74,36 +72,6 @@ function InterfaceModel(ko) {
   if (self.servers().length == 0) {
     $("#myModal").modal('show');
   }
-
-  // var sm = new ServerModel();
-  // ko.applyBindings(new ReservationsViewModel());
-
-  // ****************************************************************************
-  // Bindings
-  // ****************************************************************************
-  input_box.keyup(function(e){
-    if(e.shiftKey && e.keyCode == 13) {
-      $(this).trigger("shiftEnterKey");
-    } else 
-    if(e.ctrlKey && e.keyCode == 13) {
-      $(this).trigger("ctrlEnterKey");
-    } else 
-    if(e.keyCode == 13)
-    {
-      $(this).trigger("enterKey");
-    } 
-  });
-
-  input_box.bind("enterKey",function(e){
-    var say_val = input_box.val();
-    if (say_val != '') {
-
-      client.say("#" + channel_name,say_val);
-      channel.append_msg(nick_name, say_val)
-
-      input_box.val('');
-    }
-  });
 
   // Dynamically adjust the height of the textarea
   // input_box.bind("shiftEnterKey", function(e){

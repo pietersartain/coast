@@ -4,7 +4,7 @@
  */
 
 exports.ServerModel = ServerModel;
-function ServerModel(server_name, nick_name, server_addr,ko, db) {
+function ServerModel(server_name, nick_name, server_addr, ko, db) {
   var self = this;
 
   self.db = db;
@@ -51,9 +51,8 @@ function ServerModel(server_name, nick_name, server_addr,ko, db) {
 
   self.joinChannel = function(channel_name) {
     console.log("joinChannel: ", channel_name);
-    return 0;
 
-    var new_chnl = new chnl.Channel(channel_name, client)
+    var new_chnl = new chnl.ChannelModel(channel_name, client, ko)
     self.channels.push(new_chnl);
     self.selected_channel(new_chnl);
   };
@@ -64,33 +63,27 @@ function ServerModel(server_name, nick_name, server_addr,ko, db) {
 
   self.loadChannels = function() {
     for (let channel of self.db.channels.find({server_name:this.server_name})) {
-      // self.add_server(
-      //   server.server_name,
-      //   server.nick_name,
-      //   server.server_addr);
-      console.log(channel);
+      self.joinChannel(channel.channel_name);
+      console.log(channel.channel_name);
     }
   };
 
   self.saveChannel = function(channel_name) {
     var channel_details = {server_name:this.server_name, channel_name: channel_name};
-    self.db.servers.save(channel_details);
+    self.db.channels.save(channel_details);
   };
 
   self.createChannel = function() {
     var channel_name = $("input[name='channel_name']");
 
-    if (channel_name != '') {
+    if (channel_name.val() != '') {
       self.joinChannel(channel_name.val());
+      self.saveChannel(channel_name.val());
 
       channel_name.val("");
       $("#channel_modal").modal('hide');
     }
   }
-
-// This is currently uninitialised
-// var channel = require('./channel.js')
-
 
 // ****************************************************************************
 // IRC event listeners
@@ -117,6 +110,7 @@ function ServerModel(server_name, nick_name, server_addr,ko, db) {
     // self.joinChannel(self.channel_name);
 
     self.connected(true);
+    self.loadChannels();
 
   });
 
@@ -150,70 +144,3 @@ function ServerModel(server_name, nick_name, server_addr,ko, db) {
   });
 
 };
-
-
-/*
-var ServerModel = function() {
-  var self = this;
-
-  // Editable data
-  self.servers = ko.observableArray([
-    {"server_name":"a","nick_name":"aa"},
-    {"server_name":"b","nick_name":"bb"}
-  ]);
-
-  // this.db = require('diskdb');
-  // this.db.connect('./db/', ['servers']);
-
-  self.getServerList = function(db) {
-  //   var servers = this.db.servers.find();
-  //   // ko.mapping.fromJS(servers, {}, this.servers);
-  }
-
-  self.countServers = function(db) {
-  //   return this.db.servers.count();
-    return 0;
-  }
-
-  // this.exrciseList = function(data, status, jqxhr) {
-  //   ko.mapping.fromJS(data, {}, this.exercises);
-
-  //   $("[data-drag='exercise']").children("li").each(function() {
-  //     $(this).draggable({ opacity: 0.7, helper: "clone" });
-  //   });
-  // };
-
-  // // This is part of the constructor
-  // this.refreshExercises = function() {
-  //   $.ajax({
-  //     context: this,
-  //     'url': '/api/exercises',
-  //     'type': 'get',
-  //     'success': this.exerciseList,
-  //     'error': function() {}
-  //   });
-  // };
-
-  self.addServer = function(server_name, nick_name, server_addr) {
-    // var server_details = {server_name : server_name, nick_name : nick_name, server_addr : server_addr};
-    // this.servers.push(server_details);
-    // this.db.servers.save(server_details);
-  }
-
-  // this.insertExercise = function(form) {
-  //     $.ajax({
-  //       context: this,
-  //       'url': '/api/exercises', // form.attr('action')
-  //       'type': 'post', // form.attr('method')
-  //       'data': form.serialize(),
-  //       'success': this.exerciseList,
-  //       'error': function() {}
-  //     });
-  // };
-
-  // this.refreshExercises();
-
-  // this.getServerList();
-};
-
-*/

@@ -3,19 +3,45 @@
  */
 
 exports.ChannelModel = ChannelModel;
-function ChannelModel(channel_name, irc_client) {
+function ChannelModel(channel_name, client, ko) {
   var self = this;
 
-  self.channel_name = channel_name;
-  self.irc_client = irc_client;
+  self.channel_name = ko.observable(channel_name);
 
   self.moment = require('moment');
   self.appendable = 0;
 
-  self.join = function(channel) {
-    // This will need to add to some non-volatile list
-    $("#channellist-content").append("<li id='" + channel + "'><span>#</span>" + channel + "</li>");
-    $("#channel-header").append(channel);
+  self.sendMessage = function(d, e) {
+    var input_box = $("textarea.input");
+
+    if(e.shiftKey && e.keyCode == 13) {
+      // input_box.trigger("shiftEnterKey");
+    } else 
+    if(e.ctrlKey && e.keyCode == 13) {
+      // input_box.trigger("ctrlEnterKey");
+    } else 
+    if(e.keyCode == 13)
+    {
+      // input_box.trigger("enterKey");
+      var say_val = input_box.val();
+      if (say_val != '') {
+
+        self.say(say_val);
+  //       // channel.append_msg(nick_name, say_val)
+        console.log(say_val);
+
+        input_box.val('');
+      }
+    }
+  };
+
+  self.join = function() {
+    // console.log(self.channel_name);
+    client.join("#" + self.channel_name());
+  };
+
+  self.say = function(say_val) {
+    client.say("#" + self.channel_name(),say_val);
   };
 
   self.add_message = function(from, message) {
@@ -61,5 +87,7 @@ function ChannelModel(channel_name, irc_client) {
        300 // ms - time to scroll
     );
   };
+
+  self.join();
 
 };
