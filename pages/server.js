@@ -57,14 +57,15 @@ function ServerModel(server_name, nick_name, server_addr, ko, db) {
     self.selected_channel(self.channels().length-1);
   };
 
-  self.selectChannel = function(channel_name) {
-    console.log(channel_name);
+  self.selectChannel = function(channel_idx) {
+    // console.log(channel_idx);
+    self.selected_channel(channel_idx);
   };
 
   self.loadChannels = function() {
     for (let channel of self.db.channels.find({server_name:this.server_name})) {
       self.joinChannel(channel.channel_name);
-      console.log(channel.channel_name);
+      // console.log(channel.channel_name);
     }
   };
 

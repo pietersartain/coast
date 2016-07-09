@@ -17,9 +17,13 @@
       <div class="row">
 
         <div id="serverlist">
-          <ul data-bind="foreach: servers">
-            <li data-bind="html: $data.server_name"></li>
-          </ul>
+          <div data-bind="foreach: servers">
+            <li data-bind="html: $data.server_name,
+              attr: {'data-idx': $index},
+              click: function(data, event) { $parent.selectServer($index(), data, event); },
+              css: { 'currently_selected': $index() == $parent.selected_server() }"
+              class="clickable"></li>
+          </div>
           <button type="button" id="add_server_btn" data-toggle="modal" data-target="#server_modal">&plus;</button>
         </div>
 
@@ -28,8 +32,11 @@
           <h2 id="channellist-header">Channels</h2>
           <div id="channellist-content" data-bind="foreach: channels">
             <li>
-              <div data-bind="click: $parent.selectChannel">
-                <span>#</span><span data-bind="html: $data.channel_name"></span>
+              <div data-bind="attr: {'data-idx': $index},
+                click: function(data, event) { $parent.selectChannel($index(), data, event); }"
+                class="clickable">
+                <span>#</span><span data-bind="html: $data.channel_name,
+                  css: { 'currently_selected': $index() == $parent.selected_channel() }"></span>
               </div>
             </li>
           </div>

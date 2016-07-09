@@ -44,6 +44,10 @@ function InterfaceModel(ko) {
     self.db.servers.save(server_details);
   };
 
+  self.selectServer = function(server_idx) {
+    // console.log(channel_idx);
+    self.selected_server(server_idx);
+  };
 
   self.addServerBind = function() {
     var server_name = $("input[name='server_name']");

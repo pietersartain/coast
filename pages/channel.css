@@ -1,15 +1,29 @@
 @import 'https://fonts.googleapis.com/css?family=Lato:300,400,900';
 
+html {
+    /*position: absolute;*/
+}
+
 body {
     font-family: 'Lato', sans-serif;
     height: 100%;
     width: 100%;
 }
 
+.currently_selected {
+    color: #fff;
+}
+
+.clickable {
+    cursor: pointer;
+}
+
 /* serverlist */
 #serverlist {
-    position: fixed;
+    position: absolute;
+    overflow-y: auto;
     top: 0;
+    bottom: 0;
     width: 40px;
     padding: 7px;
     background-color: rgb(51, 39, 50);
@@ -29,14 +43,20 @@ body {
 
 /* channellist */
 #channellist {
-    position: fixed;
+    position: absolute;
+    overflow-y: auto;
     top: 0;
+    bottom: 0;
     width: 120px;
     padding: 15px;
     background-color: #4d394b;
     color: #ab9ba9;
     height: 100%;
     margin-left: 40px;
+}
+
+li {
+    list-style-type: none;
 }
 
 #channellist-header {
@@ -48,7 +68,8 @@ body {
 #channel {
     min-height: 100%;
     margin-left: 160px;
-    width: 100%;
+    left: 175px;
+    right: 0;
 }
 
 #channel-header::before {
@@ -70,7 +91,7 @@ body {
 #channel-content {
     margin-top: 40px;
     margin-bottom: 100px;
-    width: calc(100% - 185px);
+    padding: 7px;
 }
 
 #channel-input {
