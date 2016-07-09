@@ -53,7 +53,8 @@ function ServerModel(server_name, nick_name, server_addr, ko, db) {
 
     var new_chnl = new chnl.ChannelModel(channel_name, nick_name, client, ko)
     self.channels.push(new_chnl);
-    self.selected_channel(new_chnl);
+    //self.selected_channel(new_chnl);
+    self.selected_channel(self.channels().length-1);
   };
 
   self.selectChannel = function(channel_name) {
@@ -134,8 +135,8 @@ function ServerModel(server_name, nick_name, server_addr, ko, db) {
       });
 
       if (cidx != -1) {
-        // self.channels()[cidx].addMessage(from, message);
-        self.selected_channel().addMessage(from, message);
+        self.channels()[cidx].addMessage(from, message);
+        // self.selected_channel().addMessage(from, message);
       }
     }
   });

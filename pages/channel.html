@@ -23,9 +23,10 @@
           <button type="button" id="add_server_btn" data-toggle="modal" data-target="#server_modal">&plus;</button>
         </div>
 
-        <div id="channellist" data-bind="if: selected_server().connected">
+        <!-- ko with: servers()[selected_server()] -->
+        <div id="channellist" data-bind="if: connected">
           <h2 id="channellist-header">Channels</h2>
-          <div id="channellist-content" data-bind="foreach: selected_server().channels">
+          <div id="channellist-content" data-bind="foreach: channels">
             <li>
               <div data-bind="click: $parent.selectChannel">
                 <span>#</span><span data-bind="html: $data.channel_name"></span>
@@ -34,17 +35,18 @@
           </div>
           <button type="button" id="add_channel_btn" data-toggle="modal" data-target="#channel_modal">&plus;</button>
         </div>
+        <!-- /ko -->
 
-        <div id="channel" data-bind="with: selected_server().selected_channel()">
+        <div id="channel" data-bind="with: servers()[selected_server()].channels()[servers()[selected_server()].selected_channel()]">
           <h2 id="channel-header" data-bind="html: channel_name"></h2>
           <div id="channel-content" data-bind="foreach: messages">
             <div class='message'>
               <span class='message-name'    data-bind="html: from"></span>
               <span class='message-date'    data-bind="html: when"></span>
-              <!-- ko foreach: fragments -->
-              <div  class='message-content' data-bind="html: $data"></div>
-              <!-- /ko -->
-            </div>
+               <!-- ko foreach: fragments -->
+               <div  class='message-content' data-bind="html: $data"></div>
+               <!-- /ko -->
+             </div>
           </div>
           <textarea id="channel-input" class="input"
             data-bind="event: { keyup: sendMessage }"
@@ -76,7 +78,7 @@
       </div><!-- /.modal-dialog -->
     </div><!-- /.modal -->
 
-    <div class="modal fade" id="channel_modal" data-keyboard="false" data-backdrop="static">
+    <div class="modal fade" id="channel_modal">
       <div class="modal-dialog" role="document">
         <div class="modal-content">
           <div class="modal-header">

@@ -22,7 +22,7 @@ function InterfaceModel(ko) {
   self.addServer = function(server_name, nick_name, server_addr) {
     var new_srv = new srv.ServerModel(server_name, nick_name, server_addr, ko, this.db);
     self.servers.push(new_srv);
-    self.selected_server(new_srv);
+    self.selected_server(self.servers().length-1);
   };
 
   self.loadServers = function() {
@@ -61,10 +61,10 @@ function InterfaceModel(ko) {
     }
   };
 
-  // Channel stuff
-  self.append_msg = function(info) {
-    $("#channellist-content").append("<li id='" + info + "'><span>#</span>" + info + "</li>");
-  };
+  // // Channel stuff
+  // self.append_msg = function(info) {
+  //   $("#channellist-content").append("<li id='" + info + "'><span>#</span>" + info + "</li>");
+  // };
 
   // Constructor code
   self.loadServers();
