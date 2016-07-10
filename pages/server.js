@@ -60,6 +60,7 @@ function ServerModel(server_name, nick_name, server_addr, ko, db) {
   self.selectChannel = function(channel_idx) {
     // console.log(channel_idx);
     self.selected_channel(channel_idx);
+    self.channels()[channel_idx].updateScroll(0);
   };
 
   self.loadChannels = function() {

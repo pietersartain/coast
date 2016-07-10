@@ -30,6 +30,7 @@
         <!-- ko with: servers()[selected_server()] -->
         <div id="channellist" data-bind="if: connected">
           <h2 id="channellist-header">Channels</h2>
+          <button type="button" id="add_channel_btn" data-toggle="modal" data-target="#channel_modal">&plus;</button>
           <div id="channellist-content" data-bind="foreach: channels">
             <li>
               <div data-bind="attr: {'data-idx': $index},
@@ -40,7 +41,6 @@
               </div>
             </li>
           </div>
-          <button type="button" id="add_channel_btn" data-toggle="modal" data-target="#channel_modal">&plus;</button>
         </div>
         <!-- /ko -->
 
@@ -55,9 +55,9 @@
                <!-- /ko -->
              </div>
           </div>
-          <textarea id="channel-input" class="input"
-            data-bind="event: { keyup: sendMessage }"
-            ></textarea>
+          <div id="channel-input">
+            <textarea class="input" data-bind="event: { keyup: sendMessage }"></textarea>
+          </div>
         </div>
       </div>
     </div>

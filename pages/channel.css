@@ -18,6 +18,10 @@ body {
     cursor: pointer;
 }
 
+.clickable:hover {
+    color: silver;
+}
+
 /* serverlist */
 #serverlist {
     position: absolute;
@@ -68,12 +72,26 @@ li {
 #channel {
     min-height: 100%;
     margin-left: 160px;
-    left: 175px;
-    right: 0;
 }
 
 #channel-header::before {
     content: "#";
+}
+
+#add_channel_btn {
+    position: absolute;
+    left: 90px;
+    top: 9px;
+    border: 0px solid #ab9ba9;
+    background-color: #4d394b;
+    color: #ab9ba9;
+    padding: 0;
+    margin: 0;
+
+}
+
+#add_channel_btn:hover {
+    color: silver;
 }
 
 #channel-header {
@@ -86,27 +104,36 @@ li {
     border: 0px solid #e0e0e0;
     border-bottom-width: 1px;
     padding: 10px;
+    z-index: 3;
 }
 
 #channel-content {
-    margin-top: 40px;
-    margin-bottom: 100px;
-    padding: 7px;
+    overflow-y: auto;
+    position: absolute;
+    left: 175px;
+    right: 0;
+    top: 40px;
+    height: calc(100% - 100px);
+    z-index: 2;
 }
 
 #channel-input {
-    display: block;
-    position: fixed;
-    bottom: 15px;
-    border: 2px solid #e0e0e0;
+    position: absolute;
+    bottom: 0px;
+    width: calc(100% - 172px);
+    margin-left: 6px;
+    z-index: 3;
+}
+
+.input {
     padding: 9px;
+    border: 2px solid #e0e0e0;
     border-radius: 6px;
     height: 48px;
-    width: calc(100% - 185px);
-    max-height: 160px;
-    max-width: 100%;
-    margin-left: 15px;
     resize: none;
+    max-height: 160px;
+    width: 100%;
+    margin-left: ;
 }
 
 /* message */

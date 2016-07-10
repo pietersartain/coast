@@ -57,7 +57,7 @@ function ChannelModel(channel_name, nick_name, client, ko) {
         post_new_message(from, message);
         reset_appendable();
     }
-    updateScroll();
+    self.updateScroll();
   };
 
   // Private functions
@@ -83,10 +83,13 @@ function ChannelModel(channel_name, nick_name, client, ko) {
     });
   };
 
-  function updateScroll(){
-    $('html,body').animate({ 
-       scrollTop: $(document).height()-$(window).height()},
-       300 // ms - time to scroll
+  self.updateScroll = function(speed){
+    if (speed == null) {
+        speed = 300;
+    }
+    $('#channel-content').animate({
+       scrollTop: $("#channel-content")[0].scrollHeight-$(window).height()+140},
+       speed // ms - time to scroll
     );
   };
 
