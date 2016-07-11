@@ -29,14 +29,6 @@ function ServerModel(server_name, nick_name, server_addr, ko, db) {
 
   var chnl = require('./channel.js')
 
-  // self.nick_name= "pietesartain";
-  // self.channel_name = "test";
-  // self.ip_addr = '192.168.0.64';
-
-// if (!debug) {
-//   nick_name = "Piete";
-// }
-
 
   self.server_name = server_name;
   self.nick_name = nick_name;
