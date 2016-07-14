@@ -4,6 +4,44 @@ As an exercise in playing with Javascript and Node, this is (the start of) an ae
 
 This is based off [Electron](http://electron.atom.io), using [KnockoutJS](http://knockoutjs.com/).
 
+## Minimum viable Slack
+
+Servers
+
+ + ~~Can configure server (server name, address, user name)~~
+ + ~~Configured servers are saved~~
+ + ~~Can connect to more than one server at a time~~
+ + Currently selected server is displayed
+ + Servers with unread messages are highlighted
+ + MVP only needs one server
+
+Channels
+
+ + Can show list of channels to join
+ + ~~Can join existing channels~~
+ + ~~Can create new channels~~
+ + ~~Can select a channel~~
+ + ~~Can send/receive messages per channel~~
+ + ~~Can visually see which channel I"m currently in~~
+ + Channels with unread messages in are highlighted
+ + Can see who is in the current channel
+ + Get notices when people join or leave a channel
+
+Users
+
+ + Can send/receive DMs
+ + Can visually see if new DMs arrive
+
+Slack-specific USPs:
+
+ + Bundles messages by author (3 minute timeout, doesn't refresh)
+ + Message history (within IRC confines)
+ + Reactions / custom emoji
+ + Clickable links (probably with inline cards)
+ + Message pinning
+ + Message sharing (with inline cards)
+ + User icons
+
 ## To Use / Dev on
 
 (Instructions borrowed from Electron)

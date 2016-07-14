@@ -34,9 +34,6 @@ function InterfaceModel(ko) {
 
   self.connected = ko.observable(true);
 
-  // ...
-
-  // Server stuff
   self.addServer = function(server_name, nick_name, server_addr) {
     var new_srv = new srv.ServerModel(server_name, nick_name, server_addr, ko, this.db);
     self.servers.push(new_srv);
@@ -48,8 +45,8 @@ function InterfaceModel(ko) {
       self.addServer(
         server.server_name,
         server.nick_name,
-        server.server_addr);
-      // console.log(server);
+        server.server_addr
+      );
     }
   };
 
@@ -63,7 +60,6 @@ function InterfaceModel(ko) {
   };
 
   self.selectServer = function(server_idx) {
-    // console.log(channel_idx);
     self.selected_server(server_idx);
   };
 
@@ -83,16 +79,11 @@ function InterfaceModel(ko) {
     }
   };
 
-  // // Channel stuff
-  // self.append_msg = function(info) {
-  //   $("#channellist-content").append("<li id='" + info + "'><span>#</span>" + info + "</li>");
-  // };
-
   // Constructor code
   self.loadServers();
 
   if (self.servers().length == 0) {
-    $("#myModal").modal('show');
+    $("#server_modal").modal('show');
   }
 
   // Dynamically adjust the height of the textarea

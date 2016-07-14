@@ -59,9 +59,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
             </li>
           </div>
         </div>
-        <!-- /ko -->
 
-        <div id="channel" data-bind="with: servers()[selected_server()].channels()[servers()[selected_server()].selected_channel()]">
+        <div id="channel" data-bind="with: channels()[selected_channel()]">
           <h2 id="channel-header" data-bind="html: channel_name"></h2>
           <div id="channel-content" data-bind="foreach: messages">
             <div class='message'>
@@ -76,6 +75,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
             <textarea class="input" data-bind="event: { keyup: sendMessage }"></textarea>
           </div>
         </div>
+        <!-- /ko -->
+
       </div>
     </div>
 
@@ -102,6 +103,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       </div><!-- /.modal-dialog -->
     </div><!-- /.modal -->
 
+    <!-- ko with: servers()[selected_server()] -->
     <div class="modal fade" id="channel_modal">
       <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -114,13 +116,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
           <div class="modal-body">
             <div>
               <input type="text" name="channel_name" placeholder="New channel name ..." size="44">
-              <button type="button" class="btn btn-primary" id="create_channel" data-bind="click: selected_server().createChannel">Create channel</button>
+              <button type="button" class="btn btn-primary" id="create_channel" data-bind="click: createChannel">Create channel</button>
             </div>
             <div>
-              <ul data-bind="foreach: selected_server.getChannelList">
+<!--               <ul data-bind="foreach: selected_server.getChannelList">
                 <li data-bind="click: selected_server.joinChannel; html: $data.server_name"></li>
               </ul>
-            </div>
+ -->            </div>
           </div>
           <div class="modal-footer">
             
@@ -128,6 +130,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         </div><!-- /.modal-content -->
       </div><!-- /.modal-dialog -->
     </div><!-- /.modal -->
+    <!-- /ko -->
 
   </body>
 

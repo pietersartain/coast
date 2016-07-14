@@ -47,7 +47,6 @@ function ChannelModel(channel_name, nick_name, client, ko) {
       if (say_val != '') {
 
         self.say(say_val);
-        self.addMessage(self.nick_name, say_val)
 
         input_box.val('');
       }
