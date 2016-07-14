@@ -16,7 +16,7 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-@import 'https://fonts.googleapis.com/css?family=Lato:300,400,900';
+@import 'https://fonts.googleapis.com/css?family=Lato:200,300,400';
 
 html {
     /*position: absolute;*/
@@ -26,10 +26,6 @@ body {
     font-family: 'Lato', sans-serif;
     height: 100%;
     width: 100%;
-}
-
-.currently_selected {
-    color: #fff;
 }
 
 .clickable {
@@ -70,11 +66,11 @@ body {
     top: 0;
     bottom: 0;
     width: 120px;
-    padding: 15px;
     background-color: #4d394b;
     color: #ab9ba9;
     height: 100%;
     margin-left: 40px;
+    font-weight: 300;
 }
 
 li {
@@ -84,6 +80,34 @@ li {
 #channellist-header {
     text-transform: uppercase;
     font-size: 0.8rem;
+    margin: 15px;
+}
+
+.channel_hash_icon {
+    color: rgb(124, 106, 122);
+}
+
+.currently_selected .channel_hash_icon {
+    color: rgb(178, 213, 201);
+}
+
+.currently_selected .channel_name {
+    color: #fff;
+}
+
+.channel {
+    padding-left: 15px;
+    margin-right: 15px;
+}
+
+.currently_selected {
+    background-color: rgb(79, 150, 137);
+    border-radius: 0 6px 6px 0;
+}
+
+.currently_unread {
+    color: #fff;
+    font-weight: 600;
 }
 
 /* channel */
@@ -168,4 +192,8 @@ li {
     font-weight: 300;
     color: silver;
     font-size: 12px;
+}
+
+.message-content {
+    font-weight: normal;
 }

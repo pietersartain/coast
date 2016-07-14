@@ -49,14 +49,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
           <h2 id="channellist-header">Channels</h2>
           <button type="button" id="add_channel_btn" data-toggle="modal" data-target="#channel_modal">&plus;</button>
           <div id="channellist-content" data-bind="foreach: channels">
-            <li>
-              <div data-bind="attr: {'data-idx': $index},
-                click: function(data, event) { $parent.selectChannel($index(), data, event); }"
-                class="clickable">
-                <span>#</span><span data-bind="html: $data.channel_name,
-                  css: { 'currently_selected': $index() == $parent.selected_channel() }"></span>
-              </div>
-            </li>
+            <div data-bind="attr: {'data-idx': $index},
+              click: function(data, event) { $parent.selectChannel($index(), data, event); },
+              css: {
+                'currently_selected': $index() == $parent.selected_channel(),
+                'currently_unread'  : $data.unread() == true
+               }"
+              class="clickable channel">
+                <span class="channel_hash_icon">#</span>
+                <span class="channel_name" data-bind="html: $data.channel_name"></span>
+            </div>
           </div>
         </div>
 

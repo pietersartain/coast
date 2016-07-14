@@ -23,7 +23,7 @@ Channels
  + ~~Can select a channel~~
  + ~~Can send/receive messages per channel~~
  + ~~Can visually see which channel I"m currently in~~
- + Channels with unread messages in are highlighted
+ + ~~Channels with unread messages in are highlighted~~
  + Can see who is in the current channel
  + Get notices when people join or leave a channel
 

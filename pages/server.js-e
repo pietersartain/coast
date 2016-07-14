@@ -51,6 +51,8 @@ function ServerModel(server_name, nick_name, server_addr, ko, db) {
   // Connect to the server
   var client = new self.irc.Client(self.server_addr, self.nick_name,
       {
+        userName: 'Coast',
+        realName: 'Coast IRC client',
         channels: [],
       });
 
@@ -63,6 +65,7 @@ function ServerModel(server_name, nick_name, server_addr, ko, db) {
   self.selectChannel = function(channel_idx) {
     self.selected_channel(channel_idx);
     self.channels()[channel_idx].updateScroll(0);
+    self.channels()[channel_idx].unread(false);
   };
 
   self.loadChannels = function() {

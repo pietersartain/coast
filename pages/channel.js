@@ -27,9 +27,10 @@ function ChannelModel(channel_name, nick_name, client, ko) {
   self.channel_name = ko.observable(channel_name);
   self.nick_name = nick_name;
   self.messages = ko.observableArray([]);
+  self.unread = ko.observable(false);
 
   self.moment = require('moment')
-  self.appendable = 0;
+  self.appendable = false;
 
   self.sendMessage = function(d, e) {
     var input_box = $("textarea.input");
@@ -68,21 +69,22 @@ function ChannelModel(channel_name, nick_name, client, ko) {
         last_poster = self.messages()[self.messages().length - 1].from; //$(".message-name:last").text();
     }
 
-    if (from == last_poster && self.appendable) {
+    if ( (from == last_poster) && self.appendable) {
         append_new_message(message);
     } else {
         post_new_message(from, message);
         reset_appendable();
     }
+    self.unread(true);
     self.updateScroll();
   };
 
   // Private functions
   function reset_appendable() {
     clearTimeout();
-    self.appendable = 1
+    self.appendable = true;
     setTimeout(function(){
-        appendable = 0;
+        self.appendable = false;
     }, 1000 * 180); // 3 minutes
   };
 
