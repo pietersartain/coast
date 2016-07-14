@@ -34,8 +34,6 @@ function ServerModel(server_name, nick_name, server_addr, ko, db) {
   self.nick_name = nick_name;
   self.server_addr = server_addr;
 
-  self.debug = 0;
-
   self.channels = ko.observableArray([]
     // [{channel_name : "a"},
     // {channel_name : "b"},
@@ -56,8 +54,8 @@ function ServerModel(server_name, nick_name, server_addr, ko, db) {
         channels: [],
       });
 
-  self.joinChannel = function(channel_name) {
-    var new_chnl = new chnl.ChannelModel(channel_name, nick_name, client, ko)
+  self.joinChannel = function(prefix, channel_name, offline) {
+    var new_chnl = new chnl.ChannelModel(prefix, channel_name, nick_name, client, ko, offline)
     self.channels.push(new_chnl);
     self.selected_channel(0);
   };
@@ -69,13 +67,18 @@ function ServerModel(server_name, nick_name, server_addr, ko, db) {
   };
 
   self.loadChannels = function() {
+    self.joinChannel("%", "System", true);
     for (let channel of self.db.channels.find({server_name:this.server_name})) {
-      self.joinChannel(channel.channel_name);
+      self.joinChannel(channel.prefix, channel.channel_name);
     }
   };
 
-  self.saveChannel = function(channel_name) {
-    var channel_details = {server_name:this.server_name, channel_name: channel_name};
+  self.saveChannel = function(prefix, channel_name) {
+    var channel_details = {
+      server_name:this.server_name,
+      channel_prefix: prefix,
+      channel_name: channel_name
+    };
     self.db.channels.save(channel_details);
   };
 
@@ -83,11 +86,23 @@ function ServerModel(server_name, nick_name, server_addr, ko, db) {
     var channel_name = $("input[name='channel_name']");
 
     if (channel_name.val() != '') {
-      self.joinChannel(channel_name.val());
-      self.saveChannel(channel_name.val());
+      self.joinChannel("#", channel_name.val());
+      self.saveChannel("#", channel_name.val());
 
       channel_name.val("");
       $("#channel_modal").modal('hide');
+    }
+  }
+
+  self.startDM = function() {
+    var channel_name = $("input[name='channel_name']");
+
+    if (channel_name.val() != '') {
+      self.joinChannel("", channel_name.val());
+      self.saveChannel("", channel_name.val());
+
+      channel_name.val("");
+      $("#dm_modal").modal('hide');
     }
   }
 
@@ -167,13 +182,11 @@ function ServerModel(server_name, nick_name, server_addr, ko, db) {
     if (to.substr(0,1) == "#") {
       // Channel message
       to = to.substr(1);
-      var cidx = getChannelIdx(to);
+    }
+    var cidx = getChannelIdx(to);
 
-      if (cidx != -1) {
-        self.channels()[cidx].addMessage(self.nick_name, text, "message");
-      }
-    } else {
-      // Private message
+    if (cidx != -1) {
+      self.channels()[cidx].addMessage(self.nick_name, text, "message");
     }
   });
 
@@ -181,7 +194,15 @@ function ServerModel(server_name, nick_name, server_addr, ko, db) {
   client.addListener('notice', function(nick, to, text, message) {});
 
   // As per ‘message’ event but only emits when the message is direct to the client. See the raw event for details on the message object.
-  client.addListener('pm', function(nick, text, message) {});
+  client.addListener('pm', function(nick, text, message) {
+    var cidx = getChannelIdx(message.nick);
+    if (cidx == -1) {
+      self.joinChannel("", message.nick, true);
+      // self.saveChannel("", message.nick);
+    }
+    cidx = self.channels().length-1;
+    self.channels()[cidx].addMessage(message.nick, text, "message");
+  });
 
   // Emitted when a user changes nick along with the channels the user is in. See the raw event for details on the message object.
   client.addListener('nick', function(oldnick, newnick, channels, message) {});
@@ -217,14 +238,18 @@ function ServerModel(server_name, nick_name, server_addr, ko, db) {
   // This data is also available via the Client.channellist property after this event has fired.
   client.addListener('channellist', function(channels) {});
 
-  if (self.debug) {
+  if (0) {
     client.addListener('raw', function(message) {
       console.log('raw: ', message);
     });
   }
 
   client.addListener('error', function(message) {
-    console.log('Error: ', message);
+    // console.log('Error: ', message);
+    var cidx = getChannelIdx("System");
+    if (cidx != -1) {
+      self.channels()[cidx].addMessage("CoastBot", "Sorry, '" + message.args[1] + "' is an " + message.args[2] , "system");
+    }
   });
 
   // Emitted whenever a user performs an action (e.g. /me waves). The message parameter is exactly as in the ‘raw’ event.

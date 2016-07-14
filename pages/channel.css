@@ -65,7 +65,7 @@ body {
     overflow-y: auto;
     top: 0;
     bottom: 0;
-    width: 120px;
+    width: 220px;
     background-color: #4d394b;
     color: #ab9ba9;
     height: 100%;
@@ -80,7 +80,7 @@ li {
 #channellist-header {
     text-transform: uppercase;
     font-size: 0.8rem;
-    margin: 15px;
+    margin: 15px 15px 0 15px;
 }
 
 .channel_hash_icon {
@@ -113,7 +113,7 @@ li {
 /* channel */
 #channel {
     min-height: 100%;
-    margin-left: 160px;
+    margin-left: 260px;
 }
 
 #channel-header::before {
@@ -123,13 +123,13 @@ li {
 #add_channel_btn {
     position: absolute;
     left: 90px;
-    top: 9px;
+    top: 13px;
     border: 0px solid #ab9ba9;
     background-color: #4d394b;
     color: #ab9ba9;
     padding: 0;
     margin: 0;
-
+    line-height: 15px;
 }
 
 #add_channel_btn:hover {
@@ -152,7 +152,7 @@ li {
 #channel-content {
     overflow-y: auto;
     position: absolute;
-    left: 175px;
+    left: 275px;
     right: 0;
     top: 40px;
     height: calc(100% - 100px);
@@ -162,7 +162,7 @@ li {
 #channel-input {
     position: absolute;
     bottom: 0px;
-    width: calc(100% - 172px);
+    width: calc(100% - 272px);
     margin-left: 6px;
     z-index: 3;
 }

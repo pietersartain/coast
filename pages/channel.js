@@ -21,13 +21,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 exports.ChannelModel = ChannelModel;
-function ChannelModel(channel_name, nick_name, client, ko) {
+function ChannelModel(prefix, channel_name, nick_name, client, ko, offline) {
   var self = this;
 
   self.channel_name = ko.observable(channel_name);
   self.nick_name = nick_name;
   self.messages = ko.observableArray([]);
   self.unread = ko.observable(false);
+  self.prefix = ko.observable(prefix);
 
   self.moment = require('moment')
   message_appendable = false;
@@ -56,11 +57,39 @@ function ChannelModel(channel_name, nick_name, client, ko) {
 
   self.join = function() {
     // console.log(self.channel_name);
-    client.join("#" + self.channel_name());
+    client.join(self.prefix() + self.channel_name());
   };
 
   self.say = function(say_val) {
-    client.say("#" + self.channel_name(),say_val);
+    if (say_val.substr(0,1) == "/") {
+      // Action
+      var argv = say_val.substr(1).trim().split(" ");
+      if (argv[0] == "irc") {
+        argv.shift();
+        client.send.apply(client, argv);
+      } else {
+        var fn = self.actionHandler[argv.shift()];
+        if (typeof fn == "function" && argv.length > 0) {
+          fn.apply(fn, argv);
+        }
+      }
+
+    } else {
+      client.say(self.prefix() + self.channel_name(),say_val);
+    }
+  };
+
+  self.actionHandler = { 
+    w: function(whom, message){
+      if (whom != '' && message != '') {
+        client.say(whom, message);
+      }
+    },
+    me: function(action){
+      if (action != '') {
+        client.action(self.prefix() + self.channel_name(), "")
+      }
+    }
   };
 
   self.addMessage = function(from, message, type) {
@@ -120,6 +149,9 @@ function ChannelModel(channel_name, nick_name, client, ko) {
     );
   };
 
-  self.join();
+  if (!offline) {
+    self.join();
+  }
+
 
 };
