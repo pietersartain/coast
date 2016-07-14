@@ -180,20 +180,25 @@ li {
 
 /* message */
 .message {
-    font-weight: 400;
+    font-weight: 300;
 }
 
 .message-name {
-    font-weight: bold;
+    font-weight: bolder;
     font-size: 15px;
 }
 
 .message-date {
     font-weight: 300;
-    color: silver;
+    color: #9e9ea6;
     font-size: 12px;
 }
 
 .message-content {
-    font-weight: normal;
+    display: block;
+}
+
+.system_message {
+    font-style: italic;
+    color: rgb(158,158,156);
 }

@@ -91,6 +91,12 @@ function ServerModel(server_name, nick_name, server_addr, ko, db) {
     }
   }
 
+  function getChannelIdx(channel_name) {
+    return self.channels().findIndex(function(element, index, array){
+      return element.channel_name() === channel_name;
+    });
+  }
+
 // ****************************************************************************
 // IRC event listeners
 // ****************************************************************************
@@ -112,10 +118,30 @@ function ServerModel(server_name, nick_name, server_addr, ko, db) {
   client.addListener('topic', function(channel, topic, nick, message) {});
 
   // Emitted when a user joins a channel (including when the client itself joins a channel). See the raw event for details on the message object.
-  client.addListener('join', function(channel, nick, message) {});
+  client.addListener('join', function(channel, nick, message) {
+    var to = channel.substr(1);
+    var cidx = getChannelIdx(to);
+
+    if (cidx != -1) {
+      self.channels()[cidx].addMessage(nick, "joined " + channel + ".", "system");
+    }
+  });
 
   // Emitted when a user parts a channel (including when the client itself parts a channel). See the raw event for details on the message object.
-  client.addListener('part', function(channel, nick, reason, message) {});
+  client.addListener('part', function(channel, nick, reason, message) {
+    var to = channel.substr(1);
+    var cidx = getChannelIdx(to);
+
+    if (cidx != -1) {
+      var leaving_message = "left " + channel;
+      if (reason) {
+       leaving_message = leaving_message + " with a '" + reason + "'";
+      } else {
+        leaving_message = leaving_message + ".";
+      }
+      self.channels()[cidx].addMessage(nick, leaving_message, "system");
+    }
+  });
 
   // Emitted when a user disconnects from the IRC, leaving the specified array of channels. See the raw event for details on the message object.
   client.addListener('quit', function(nick, reason, channels, message) {});
@@ -129,12 +155,10 @@ function ServerModel(server_name, nick_name, server_addr, ko, db) {
   // Emitted when a message is sent to any channel (i.e. exactly the same as the message event but excluding private messages. See the raw event for details on the message object.
   client.addListener('message#', function (nick, to, text, message) {
     to = to.substr(1);
-    var cidx = self.channels().findIndex(function(element, index, array){
-      return element.channel_name() === to;
-    });
+    var cidx = getChannelIdx(to);
 
     if (cidx != -1) {
-      self.channels()[cidx].addMessage(nick, text);
+      self.channels()[cidx].addMessage(nick, text, "message");
     }
   });
 
@@ -143,12 +167,10 @@ function ServerModel(server_name, nick_name, server_addr, ko, db) {
     if (to.substr(0,1) == "#") {
       // Channel message
       to = to.substr(1);
-      var cidx = self.channels().findIndex(function(element, index, array){
-        return element.channel_name() === to;
-      });
+      var cidx = getChannelIdx(to);
 
       if (cidx != -1) {
-        self.channels()[cidx].addMessage(self.nick_name, text);
+        self.channels()[cidx].addMessage(self.nick_name, text, "message");
       }
     } else {
       // Private message

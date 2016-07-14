@@ -30,7 +30,7 @@ function ChannelModel(channel_name, nick_name, client, ko) {
   self.unread = ko.observable(false);
 
   self.moment = require('moment')
-  self.appendable = false;
+  message_appendable = false;
 
   self.sendMessage = function(d, e) {
     var input_box = $("textarea.input");
@@ -63,44 +63,52 @@ function ChannelModel(channel_name, nick_name, client, ko) {
     client.say("#" + self.channel_name(),say_val);
   };
 
-  self.addMessage = function(from, message) {
+  self.addMessage = function(from, message, type) {
     var last_poster;
     if (self.messages().length > 0) {
-        last_poster = self.messages()[self.messages().length - 1].from; //$(".message-name:last").text();
+        last_poster = self.messages()[self.messages().length - 1].from;
     }
 
-    if ( (from == last_poster) && self.appendable) {
-        append_new_message(message);
+    if ( (from == last_poster) && message_appendable) {
+        // Append
+        self.messages()[self.messages().length - 1].fragments.push({message:message, type:type});
     } else {
-        post_new_message(from, message);
-        reset_appendable();
+        post_new_message(from, message, type);
+        reset_message_appendable();
     }
     self.unread(true);
     self.updateScroll();
   };
 
+  // self.addJoinMessage = function(nick_joined) {
+  //   self.messages.push({
+  //     from: "system",
+  //     type: "joined",
+  //     when: timenow(),
+  //     joined: nick_joined
+  //   });
+  // };
+
   // Private functions
-  function reset_appendable() {
+  function reset_message_appendable() {
     clearTimeout();
-    self.appendable = true;
+    message_appendable = true;
     setTimeout(function(){
-        self.appendable = false;
+        message_appendable = false;
     }, 1000 * 180); // 3 minutes
   };
 
-  function append_new_message(message) {
-    self.messages()[self.messages().length - 1].fragments.push(message);
-  };
-
-  function post_new_message(from, message) {
-    var now = self.moment().format('h:mm A');
-
+  function post_new_message(from, message, type) {
     self.messages.push({
         from: from,
-        when: now,
-        fragments: ko.observableArray([message])
+        when: timenow(),
+        fragments: ko.observableArray([{message:message, type:type}])
     });
   };
+
+  function timenow() {
+    return self.moment().format('h:mm A');
+  }
 
   self.updateScroll = function(speed){
     if (speed == null) {

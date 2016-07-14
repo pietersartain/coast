@@ -65,13 +65,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         <div id="channel" data-bind="with: channels()[selected_channel()]">
           <h2 id="channel-header" data-bind="html: channel_name"></h2>
           <div id="channel-content" data-bind="foreach: messages">
+
             <div class='message'>
               <span class='message-name'    data-bind="html: from"></span>
               <span class='message-date'    data-bind="html: when"></span>
-               <!-- ko foreach: fragments -->
-               <div  class='message-content' data-bind="html: $data"></div>
-               <!-- /ko -->
-             </div>
+              <!-- ko foreach: fragments -->
+                <span class='message-content' data-bind="html: $data.message,
+                css: { 'system_message': $data.type == 'system'}"></span>
+              <!-- /ko -->
+            </div>
+
           </div>
           <div id="channel-input">
             <textarea class="input" data-bind="event: { keyup: sendMessage }"></textarea>
