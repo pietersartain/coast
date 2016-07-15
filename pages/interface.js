@@ -41,7 +41,7 @@ function InterfaceModel(ko) {
   };
 
   self.loadServers = function() {
-    for (let server of self.db.servers.find()) {
+    for (let server of self.db['servers'].find()) {
       self.addServer(
         server.server_name,
         server.nick_name,
@@ -56,7 +56,7 @@ function InterfaceModel(ko) {
       nick_name : nick_name, 
       server_addr : server_addr
     };
-    self.db.servers.save(server_details);
+    self.db['servers'].save(server_details);
   };
 
   self.selectServer = function(server_idx) {

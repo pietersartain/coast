@@ -55,7 +55,9 @@ function ServerModel(server_name, nick_name, server_addr, ko, db) {
       });
 
   self.joinChannel = function(prefix, channel_name, offline) {
-    var new_chnl = new chnl.ChannelModel(prefix, channel_name, nick_name, ko)
+    self.db.loadCollections([self.server_name + "-" + channel_name]);
+    var dbcollection = self.db[self.server_name + "-" + channel_name];
+    var new_chnl = new chnl.ChannelModel(prefix, channel_name, nick_name, ko, dbcollection)
     self.channels.push(new_chnl);
     self.selected_channel(0);
     if (!offline) {
@@ -71,9 +73,9 @@ function ServerModel(server_name, nick_name, server_addr, ko, db) {
 
   self.loadChannels = function() {
     self.joinChannel("*", "coastbot", true);
-    for (let channel of self.db.channels.find({server_name:this.server_name})) {
-      var offline = !channel.prefix
-      self.joinChannel(channel.prefix, channel.channel_name, offline);
+    for (let channel of self.db['channels'].find({server_name:this.server_name})) {
+      var offline = !channel.channel_prefix
+      self.joinChannel(channel.channel_prefix, channel.channel_name, offline);
     }
   };
 
@@ -83,7 +85,7 @@ function ServerModel(server_name, nick_name, server_addr, ko, db) {
       channel_prefix: prefix,
       channel_name: channel_name
     };
-    self.db.channels.save(channel_details);
+    self.db['channels'].save(channel_details);
   };
 
   self.createChannel = function() {
@@ -142,9 +144,12 @@ function ServerModel(server_name, nick_name, server_addr, ko, db) {
             argv.shift();
             client.send.apply(client, argv);
           } else {
-            var fn = self.actionHandler[argv.shift()];
-            if (typeof fn == "function" && argv.length > 0) {
+            var cmd = argv.shift();
+            var fn = self.actionHandler[cmd];
+            if (typeof fn == "function") {
               fn.apply(fn, argv);
+            } else {
+              self.logError("Sorry, I don't know what you meant by /" + cmd);
             }
           }
 
@@ -175,6 +180,19 @@ function ServerModel(server_name, nick_name, server_addr, ko, db) {
     me: function(action){
       if (action != '') {
         client.action(getCurrentFQChannelName(), "")
+      }
+    },
+    save: function() {
+      self.channels()[self.selected_channel()].saveNewMessages();
+    }
+  };
+
+  self.logError = function(message) {
+    var cidx = getChannelIdx("coastbot");
+    if (cidx != -1) {
+      self.channels()[cidx].addMessage("coastbot", message, "system");
+      if (cidx != self.selected_channel()) {
+        self.channels()[cidx].unread(true);
       }
     }
   };
@@ -319,14 +337,7 @@ function ServerModel(server_name, nick_name, server_addr, ko, db) {
   }
 
   client.addListener('error', function(message) {
-    // console.log('Error: ', message);
-    var cidx = getChannelIdx("coastbot");
-    if (cidx != -1) {
-      self.channels()[cidx].addMessage("coastbot", "Sorry, '" + message.args[1] + "' is an " + message.args[2] , "system");
-      if (cidx != self.selected_channel()) {
-        self.channels()[cidx].unread(true);
-      }
-    }
+    self.logError("Sorry, '" + message.args[1] + "' is an " + message.args[2]);
   });
 
   // Emitted whenever a user performs an action (e.g. /me waves). The message parameter is exactly as in the ‘raw’ event.

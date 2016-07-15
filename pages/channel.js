@@ -21,8 +21,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 exports.ChannelModel = ChannelModel;
-function ChannelModel(prefix, channel_name, nick_name, ko) {
+function ChannelModel(prefix, channel_name, nick_name, ko, db) {
   var self = this;
+
+  self.db = db;
 
   self.channel_name = ko.observable(channel_name);
   self.nick_name = nick_name;
@@ -80,5 +82,24 @@ function ChannelModel(prefix, channel_name, nick_name, ko) {
        speed // ms - time to scroll
     );
   };
+
+  self.saveNewMessages = function() {
+    var msgs = self.db.find();
+    if (msgs.length > 0) {
+      self.db.update({_id: msgs[0]._id}, {messages: ko.mapping.toJSON(self.messages)}, options);
+    } else {
+      self.db.save({messages: ko.mapping.toJSON(self.messages)});
+    }
+
+  };
+
+  self.loadLastMessages = function() {
+    var msgs = self.db.find();
+    if (msgs.length > 0) {
+      self.messages = ko.mapping.fromJSON(msgs[0].messages);
+    }
+  };
+
+  self.loadLastMessages();
 
 };
