@@ -23,6 +23,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     <meta http-equiv="x-ua-compatible" content="ie=edge">
 
     <link rel="stylesheet" href="../assets/bootstrap-4.0.0alpha.min.css">
+<!--     <link rel="stylesheet" href="../node_modules/font-awesome/css/font-awesome.min.css"> -->
     <link rel="stylesheet" href="channel.css">
 
     <title>Coast</title>
@@ -46,8 +47,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
         <!-- ko with: servers()[selected_server()] -->
         <div id="channellist" data-bind="if: connected">
-          <h2 id="channellist-header">Channels</h2>
-          <button type="button" id="add_channel_btn" data-toggle="modal" data-target="#channel_modal">&plus;</button>
+          <a href="#" data-toggle="modal" data-target="#channel_modal" class="add_modal">
+            <h2 id="channellist-header">Channels
+              <span></span>
+              <span>&plus;</span>
+            </h2>
+          </a>
+
           <div id="channellist-content" data-bind="foreach: channels">
             <div data-bind="
               if: $data.prefix() == '#',
@@ -63,8 +69,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
             </div>
           </div>
 
-          <h2 id="channellist-header">Direct messages</h2>
-          <button type="button" id="add_dm_btn" data-toggle="modal" data-target="#dm_modal">&plus;</button>
+          <a href="#" data-toggle="modal" data-target="#dm_modal" class="add_modal">
+            <h2 id="channellist-header">Direct messages
+              <span></span>
+              <span>&plus;</span>
+            </h2>
+          </a>
+
           <div id="channellist-content" data-bind="foreach: channels">
             <div data-bind="
               if: $data.prefix() != '#',
@@ -76,7 +87,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                }"
               class="clickable channel">
                 <span class="channel_dm_icon" data-bind="css: { 'currently_online': true }"></span>
-                <span class="dm_name" data-bind="html: $data.channel_name"></span>
+                <span class="channel_name" data-bind="html: $data.channel_name"></span>
             </div>
           </div>
 
@@ -97,7 +108,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
           </div>
           <div id="channel-input">
-            <textarea class="input" data-bind="event: { keyup: sendMessage }"></textarea>
+            <textarea class="input" data-bind="event: { keyup: $root.servers()[$root.selected_server()].sendMessage }"></textarea>
           </div>
         </div>
         <!-- /ko -->

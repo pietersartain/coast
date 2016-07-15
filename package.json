@@ -25,6 +25,7 @@
   "devDependencies": {
     "bootstrap": "^3.3.6",
     "electron-prebuilt": "^1.2.0",
+    "font-awesome": "^4.6.3",
     "jquery": "^3.0.0",
     "knockout": "^3.4.0"
   },

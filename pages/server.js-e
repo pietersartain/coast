@@ -55,9 +55,12 @@ function ServerModel(server_name, nick_name, server_addr, ko, db) {
       });
 
   self.joinChannel = function(prefix, channel_name, offline) {
-    var new_chnl = new chnl.ChannelModel(prefix, channel_name, nick_name, client, ko, offline)
+    var new_chnl = new chnl.ChannelModel(prefix, channel_name, nick_name, ko)
     self.channels.push(new_chnl);
     self.selected_channel(0);
+    if (!offline) {
+      client.join(prefix + channel_name);
+    }
   };
 
   self.selectChannel = function(channel_idx) {
@@ -67,9 +70,10 @@ function ServerModel(server_name, nick_name, server_addr, ko, db) {
   };
 
   self.loadChannels = function() {
-    self.joinChannel("%", "System", true);
+    self.joinChannel("*", "coastbot", true);
     for (let channel of self.db.channels.find({server_name:this.server_name})) {
-      self.joinChannel(channel.prefix, channel.channel_name);
+      var offline = !channel.prefix
+      self.joinChannel(channel.prefix, channel.channel_name, offline);
     }
   };
 
@@ -111,6 +115,69 @@ function ServerModel(server_name, nick_name, server_addr, ko, db) {
       return element.channel_name() === channel_name;
     });
   }
+
+  function getCurrentFQChannelName() {
+    return self.channels()[self.selected_channel()].prefix() + self.channels()[self.selected_channel()].channel_name();
+  }
+
+  self.sendMessage = function(d, e) {
+    var input_box = $("textarea.input");
+
+    if(e.shiftKey && e.keyCode == 13) {
+      // input_box.trigger("shiftEnterKey");
+    } else 
+    if(e.ctrlKey && e.keyCode == 13) {
+      // input_box.trigger("ctrlEnterKey");
+    } else 
+    if(e.keyCode == 13)
+    {
+      // input_box.trigger("enterKey");
+      var say_val = input_box.val();
+      if (say_val != '') {
+
+        if (say_val.substr(0,1) == "/") {
+          // Action
+          var argv = say_val.substr(1).trim().split(" ");
+          if (argv[0] == "irc") {
+            argv.shift();
+            client.send.apply(client, argv);
+          } else {
+            var fn = self.actionHandler[argv.shift()];
+            if (typeof fn == "function" && argv.length > 0) {
+              fn.apply(fn, argv);
+            }
+          }
+
+        } else if (self.channels()[self.selected_channel()].prefix() == "*") {
+          self.channels()[self.selected_channel()].addMessage(self.nick_name, say_val, "message");
+        } else {
+          client.say(getCurrentFQChannelName(), say_val);
+        }
+
+        input_box.val('');
+      }
+    }
+  };
+
+  self.actionHandler = {
+    w: function(whom, message){
+      if (whom != '' && message != '') {
+        var cidx = getChannelIdx(whom);
+        if (cidx == -1) {
+          self.joinChannel("", whom, true);
+          self.saveChannel("", whom);
+        }
+        cidx = self.channels().length-1;
+        self.channels()[cidx].addMessage(whom, message, "message");
+        // client.say(whom, message);
+      }
+    },
+    me: function(action){
+      if (action != '') {
+        client.action(getCurrentFQChannelName(), "")
+      }
+    }
+  };
 
 // ****************************************************************************
 // IRC event listeners
@@ -174,6 +241,9 @@ function ServerModel(server_name, nick_name, server_addr, ko, db) {
 
     if (cidx != -1) {
       self.channels()[cidx].addMessage(nick, text, "message");
+      if (cidx != self.selected_channel()) {
+        self.channels()[cidx].unread(true);
+      }
     }
   });
 
@@ -198,10 +268,14 @@ function ServerModel(server_name, nick_name, server_addr, ko, db) {
     var cidx = getChannelIdx(message.nick);
     if (cidx == -1) {
       self.joinChannel("", message.nick, true);
-      // self.saveChannel("", message.nick);
+      self.saveChannel("", message.nick);
     }
     cidx = self.channels().length-1;
     self.channels()[cidx].addMessage(message.nick, text, "message");
+    if (cidx != self.selected_channel()) {
+      self.channels()[cidx].unread(true);
+    }
+
   });
 
   // Emitted when a user changes nick along with the channels the user is in. See the raw event for details on the message object.
@@ -246,9 +320,12 @@ function ServerModel(server_name, nick_name, server_addr, ko, db) {
 
   client.addListener('error', function(message) {
     // console.log('Error: ', message);
-    var cidx = getChannelIdx("System");
+    var cidx = getChannelIdx("coastbot");
     if (cidx != -1) {
-      self.channels()[cidx].addMessage("CoastBot", "Sorry, '" + message.args[1] + "' is an " + message.args[2] , "system");
+      self.channels()[cidx].addMessage("coastbot", "Sorry, '" + message.args[1] + "' is an " + message.args[2] , "system");
+      if (cidx != self.selected_channel()) {
+        self.channels()[cidx].unread(true);
+      }
     }
   });
 

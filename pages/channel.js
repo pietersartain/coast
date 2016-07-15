@@ -21,7 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 exports.ChannelModel = ChannelModel;
-function ChannelModel(prefix, channel_name, nick_name, client, ko, offline) {
+function ChannelModel(prefix, channel_name, nick_name, ko) {
   var self = this;
 
   self.channel_name = ko.observable(channel_name);
@@ -32,65 +32,6 @@ function ChannelModel(prefix, channel_name, nick_name, client, ko, offline) {
 
   self.moment = require('moment')
   message_appendable = false;
-
-  self.sendMessage = function(d, e) {
-    var input_box = $("textarea.input");
-
-    if(e.shiftKey && e.keyCode == 13) {
-      // input_box.trigger("shiftEnterKey");
-    } else 
-    if(e.ctrlKey && e.keyCode == 13) {
-      // input_box.trigger("ctrlEnterKey");
-    } else 
-    if(e.keyCode == 13)
-    {
-      // input_box.trigger("enterKey");
-      var say_val = input_box.val();
-      if (say_val != '') {
-
-        self.say(say_val);
-
-        input_box.val('');
-      }
-    }
-  };
-
-  self.join = function() {
-    // console.log(self.channel_name);
-    client.join(self.prefix() + self.channel_name());
-  };
-
-  self.say = function(say_val) {
-    if (say_val.substr(0,1) == "/") {
-      // Action
-      var argv = say_val.substr(1).trim().split(" ");
-      if (argv[0] == "irc") {
-        argv.shift();
-        client.send.apply(client, argv);
-      } else {
-        var fn = self.actionHandler[argv.shift()];
-        if (typeof fn == "function" && argv.length > 0) {
-          fn.apply(fn, argv);
-        }
-      }
-
-    } else {
-      client.say(self.prefix() + self.channel_name(),say_val);
-    }
-  };
-
-  self.actionHandler = { 
-    w: function(whom, message){
-      if (whom != '' && message != '') {
-        client.say(whom, message);
-      }
-    },
-    me: function(action){
-      if (action != '') {
-        client.action(self.prefix() + self.channel_name(), "")
-      }
-    }
-  };
 
   self.addMessage = function(from, message, type) {
     var last_poster;
@@ -105,18 +46,8 @@ function ChannelModel(prefix, channel_name, nick_name, client, ko, offline) {
         post_new_message(from, message, type);
         reset_message_appendable();
     }
-    self.unread(true);
     self.updateScroll();
   };
-
-  // self.addJoinMessage = function(nick_joined) {
-  //   self.messages.push({
-  //     from: "system",
-  //     type: "joined",
-  //     when: timenow(),
-  //     joined: nick_joined
-  //   });
-  // };
 
   // Private functions
   function reset_message_appendable() {
@@ -130,12 +61,13 @@ function ChannelModel(prefix, channel_name, nick_name, client, ko, offline) {
   function post_new_message(from, message, type) {
     self.messages.push({
         from: from,
-        when: timenow(),
+        when: ftimenow(),
+        timestamp: self.moment().unix(),
         fragments: ko.observableArray([{message:message, type:type}])
     });
   };
 
-  function timenow() {
+  function ftimenow() {
     return self.moment().format('h:mm A');
   }
 
@@ -148,10 +80,5 @@ function ChannelModel(prefix, channel_name, nick_name, client, ko, offline) {
        speed // ms - time to scroll
     );
   };
-
-  if (!offline) {
-    self.join();
-  }
-
 
 };

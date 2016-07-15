@@ -26,15 +26,20 @@ Channels
  + ~~Channels with unread messages in are highlighted~~
  + Can see who is in the current channel
  + ~~Get notices when people join or leave a channel~~
+ + Can see the channel topic
+ + Can see the number of people in a channel
+ + Can leave a channel
 
 Users
 
- + Can send/receive DMs
- + Can visually see if new DMs arrive
+ + Can show a list of users to start a conversation with
+ + Can close/leave a conversation
+ + ~~Can send/receive DMs~~
+ + ~~Can visually see if new DMs arrive~~
 
 Slack-specific USPs:
 
- + Bundles messages by author (3 minute timeout, doesn't refresh)
+ + ~~Bundles messages by author (3 minute timeout, doesn't refresh)~~
  + Message history (within IRC confines)
  + Reactions / custom emoji
  + Clickable links (probably with inline cards)
