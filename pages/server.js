@@ -271,7 +271,24 @@ function ServerModel(server_name, nick_name, server_addr, ko, db) {
   });
 
   // Emitted when a user disconnects from the IRC, leaving the specified array of channels. See the raw event for details on the message object.
-  client.addListener('quit', function(nick, reason, channels, message) {});
+  client.addListener('quit', function(nick, reason, channels, message) {
+    for (let channel of channels) {
+      var to = channel.substr(1);
+      var cidx = getChannelIdx(to);
+
+      if (cidx != -1) {
+        var leaving_message = "quit " + channel;
+        if (reason) {
+         leaving_message = leaving_message + " with a '" + reason + "'";
+        } else {
+          leaving_message = leaving_message + ".";
+        }
+        self.channels()[cidx].addMessage(nick, leaving_message, "system");
+        var cmem = self.channels()[cidx].channel_members();
+        self.channels()[cidx].channel_members(cmem - 1);
+      }
+    }
+  });
 
   // Emitted when a user is kicked from a channel. See the raw event for details on the message object.
   client.addListener('kick', function(channel, nick, by, reason, message) {});
