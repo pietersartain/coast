@@ -59,7 +59,6 @@ function ServerModel(server_name, nick_name, server_addr, ko, db) {
     var dbcollection = self.db[self.server_name + "-" + channel_name];
     var new_chnl = new chnl.ChannelModel(prefix, channel_name, nick_name, ko, dbcollection)
     self.channels.push(new_chnl);
-    self.selected_channel(0);
     if (!offline) {
       client.join(prefix + channel_name);
     }
@@ -77,6 +76,7 @@ function ServerModel(server_name, nick_name, server_addr, ko, db) {
       var offline = !channel.channel_prefix
       self.joinChannel(channel.channel_prefix, channel.channel_name, offline);
     }
+    self.selected_channel(1); // Channel 0 is coastbot, so select the first non-coastbot channel
   };
 
   self.saveChannel = function(prefix, channel_name) {
