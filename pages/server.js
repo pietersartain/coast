@@ -221,10 +221,24 @@ function ServerModel(server_name, nick_name, server_addr, ko, db) {
   client.addListener('motd', function(motd) {});
 
   // Emitted when the server sends a list of nicks for a channel (which happens immediately after joining and on request. The nicks object passed to the callback is keyed by nick names, and has values ‘’, ‘+’, or ‘@’ depending on the level of that nick in the channel.
-  client.addListener('names', function(channel, nicks) {});
+  client.addListener('names', function(channel, nicks) {
+    var to = channel.substr(1);
+    var cidx = getChannelIdx(to);
+
+    if (cidx != -1) {
+      self.channels()[cidx].channel_members(Object.keys(nicks).length);
+    }
+  });
 
   // Emitted when the server sends the channel topic on joining a channel, or when a user changes the topic on a channel. See the raw event for details on the message object.
-  client.addListener('topic', function(channel, topic, nick, message) {});
+  client.addListener('topic', function(channel, topic, nick, message) {
+    var to = channel.substr(1);
+    var cidx = getChannelIdx(to);
+
+    if (cidx != -1) {
+      self.channels()[cidx].channel_topic(topic);
+    }
+  });
 
   // Emitted when a user joins a channel (including when the client itself joins a channel). See the raw event for details on the message object.
   client.addListener('join', function(channel, nick, message) {
@@ -233,6 +247,8 @@ function ServerModel(server_name, nick_name, server_addr, ko, db) {
 
     if (cidx != -1) {
       self.channels()[cidx].addMessage(nick, "joined " + channel + ".", "system");
+      var cmem = self.channels()[cidx].channel_members();
+      self.channels()[cidx].channel_members(cmem + 1);
     }
   });
 
@@ -249,6 +265,8 @@ function ServerModel(server_name, nick_name, server_addr, ko, db) {
         leaving_message = leaving_message + ".";
       }
       self.channels()[cidx].addMessage(nick, leaving_message, "system");
+      var cmem = self.channels()[cidx].channel_members();
+      self.channels()[cidx].channel_members(cmem - 1);
     }
   });
 

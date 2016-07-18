@@ -27,6 +27,8 @@ function ChannelModel(prefix, channel_name, nick_name, ko, db) {
   self.db = db;
 
   self.channel_name = ko.observable(channel_name);
+  self.channel_topic = ko.observable();
+  self.channel_members = ko.observable();
   self.nick_name = nick_name;
   self.messages = ko.observableArray([]);
   self.unread = ko.observable(false);

@@ -138,6 +138,23 @@ li {
     content: "#";
 }
 
+.channel-subhead {
+    position: fixed;
+    display: inline-block;
+    z-index: 3;
+    top: 30px;
+    font-size: smaller;
+    color: #9e9ea6;
+    padding-left: 10px;
+    font-weight: 300;
+}
+
+.channel-members {
+    border-right: 1px solid #e0e0e0;
+    padding-right: 10px;
+    margin-right: 10px;
+}
+
 .add_modal {
     background-color: #4d394b;
     color: #ab9ba9;
@@ -154,7 +171,7 @@ li {
 #channel-header {
     position: fixed;
     top: 0;
-    height: 40px;
+    height: 60px;
     width: 100%;
     background-color: #FFF;
     font-size: 0.9rem;

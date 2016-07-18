@@ -95,6 +95,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
         <div id="channel" data-bind="with: channels()[selected_channel()]">
           <h2 id="channel-header" data-bind="html: channel_name"></h2>
+          <div class="channel-subhead">
+            <span class="channel-members" data-bind="html: channel_members"></span>
+            <span class="channel-topic" data-bind="html: channel_topic"></span>
+          </div>
           <div id="channel-content" data-bind="foreach: messages">
 
             <div class='message'>
