@@ -26,8 +26,8 @@ Channels
  + ~~Channels with unread messages in are highlighted~~
  + Can see who is in the current channel
  + ~~Get notices when people join or leave a channel~~
- + Can see the channel topic
- + Can see the number of people in a channel
+ + ~~Can see the channel topic~~
+ + ~~Can see the number of people in a channel~~
  + Can leave a channel
 
 Users
@@ -43,9 +43,14 @@ Slack-specific USPs:
  + Message history (within IRC confines)
  + Reactions / custom emoji
  + Clickable links (probably with inline cards)
- + Message pinning
  + Message sharing (with inline cards)
  + User icons
+
+Enhancements past minimum-viable:
+
+ + Can set the topic of a channel
+ + Can work with IRC permissions (set modes and so forth)
+ + Message pinning
 
 ## To Use / Dev on
 
