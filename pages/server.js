@@ -165,16 +165,23 @@ function ServerModel(server_name, nick_name, server_addr, ko, db) {
   };
 
   self.actionHandler = {
-    w: function(whom, message){
+    w: function(/* whom, message*/){
+      // No argument list, because what's passed in is a variable length array.
+      // We need to reassemble it into the two variables `whom` and `message`
+      // from the `arguments` variable.
+      var args = Array.prototype.slice.call(arguments);
+      var whom = args.shift();
+      var message = args.join(" ");
+
       if (whom != '' && message != '') {
         var cidx = getChannelIdx(whom);
         if (cidx == -1) {
           self.joinChannel("", whom, true);
           self.saveChannel("", whom);
+          cidx = self.channels().length-1;
         }
-        cidx = self.channels().length-1;
-        self.channels()[cidx].addMessage(whom, message, "message");
-        // client.say(whom, message);
+        client.say(whom, message);
+        self.selectChannel(cidx);
       }
     },
     me: function(action){
