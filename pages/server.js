@@ -97,6 +97,8 @@ function ServerModel(server_name, nick_name, server_addr, ko, db) {
 
       channel_name.val("");
       $("#channel_modal").modal('hide');
+      var cidx = self.channels().length-1;
+      self.selected_channel(cidx);
     }
   }
 
