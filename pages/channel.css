@@ -186,8 +186,8 @@ li {
     position: absolute;
     left: 275px;
     right: 0;
-    top: 40px;
-    height: calc(100% - 100px);
+    top: 60px;
+    height: calc(100% - 120px);
     z-index: 2;
 }
 

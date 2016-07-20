@@ -331,8 +331,8 @@ function ServerModel(server_name, nick_name, server_addr, ko, db) {
     if (cidx == -1) {
       self.joinChannel("", message.nick, true);
       self.saveChannel("", message.nick);
+      cidx = self.channels().length-1;
     }
-    cidx = self.channels().length-1;
     self.channels()[cidx].addMessage(message.nick, text, "message");
     if (cidx != self.selected_channel()) {
       self.channels()[cidx].unread(true);
