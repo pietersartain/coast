@@ -79,6 +79,14 @@ function InterfaceModel(ko) {
     }
   };
 
+  self.quitProgram = function() {
+    for (let server of self.servers()) {
+      for (let channel of server.channels()) {
+        channel.saveNewMessages();
+      }
+    }
+  }
+
   // Constructor code
   self.loadServers();
 

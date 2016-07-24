@@ -40,7 +40,7 @@ Users
 Slack-specific USPs:
 
  + ~~Bundles messages by author (3 minute timeout, doesn't refresh)~~
- + Message history (within IRC confines)
+ + ~~Message history (within IRC confines)~~
  + Reactions / custom emoji
  + Clickable links (probably with inline cards)
  + Message sharing (with inline cards)

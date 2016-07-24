@@ -34,6 +34,11 @@ function ChannelModel(prefix, channel_name, nick_name, ko, db) {
   self.unread = ko.observable(false);
   self.prefix = ko.observable(prefix);
 
+  self.appendable_timer;
+  self.save_timer = setInterval(function(){
+    self.saveNewMessages();
+  }, 1000 * (300 + get_number_between_1_50()) ); // Every 5 minutes + a bit.
+
   self.moment = require('moment')
   message_appendable = false;
 
@@ -45,7 +50,9 @@ function ChannelModel(prefix, channel_name, nick_name, ko, db) {
 
     if ( (from == last_poster) && message_appendable) {
         // Append
-        self.messages()[self.messages().length - 1].fragments.push({message:message, type:type});
+        self.messages()[self.messages().length - 1].fragments.push(
+          {'message':ko.observable(message), 'type':ko.observable(type)}
+        );
     } else {
         post_new_message(from, message, type);
         reset_message_appendable();
@@ -55,9 +62,9 @@ function ChannelModel(prefix, channel_name, nick_name, ko, db) {
 
   // Private functions
   function reset_message_appendable() {
-    clearTimeout();
+    clearTimeout(self.appendable_timer);
     message_appendable = true;
-    setTimeout(function(){
+    self.appendable_timer = setTimeout(function(){
         message_appendable = false;
     }, 1000 * 180); // 3 minutes
   };
@@ -67,9 +74,16 @@ function ChannelModel(prefix, channel_name, nick_name, ko, db) {
         from: from,
         when: ftimenow(),
         timestamp: self.moment().unix(),
-        fragments: ko.observableArray([{message:message, type:type}])
+        fragments: ko.observableArray([
+            {'message':ko.observable(message), 'type':ko.observable(type)}
+          ])
     });
   };
+
+  function get_number_between_1_50() {
+    return Math.floor(
+      (Math.random() * 50) + 1);
+  }
 
   function ftimenow() {
     return self.moment().format('h:mm A');
@@ -88,7 +102,7 @@ function ChannelModel(prefix, channel_name, nick_name, ko, db) {
   self.saveNewMessages = function() {
     var msgs = self.db.find();
     if (msgs.length > 0) {
-      self.db.update({_id: msgs[0]._id}, {messages: ko.mapping.toJSON(self.messages)}, options);
+      self.db.update({_id: msgs[0]._id}, {messages: ko.mapping.toJSON(self.messages)}, {});
     } else {
       self.db.save({messages: ko.mapping.toJSON(self.messages)});
     }
@@ -98,7 +112,8 @@ function ChannelModel(prefix, channel_name, nick_name, ko, db) {
   self.loadLastMessages = function() {
     var msgs = self.db.find();
     if (msgs.length > 0) {
-      self.messages = ko.mapping.fromJSON(msgs[0].messages);
+      var mapping = {}
+      self.messages = ko.mapping.fromJSON(msgs[0].messages, mapping);
     }
   };
 

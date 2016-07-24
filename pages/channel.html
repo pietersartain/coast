@@ -105,8 +105,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
               <span class='message-name'    data-bind="html: from"></span>
               <span class='message-date'    data-bind="html: when"></span>
               <!-- ko foreach: fragments -->
-                <span class='message-content' data-bind="html: $data.message,
-                css: { 'system_message': $data.type == 'system'}"></span>
+                <span class='message-content' data-bind="html: $data.message(),
+                css: { 'system_message': $data.type() == 'system'}"></span>
               <!-- /ko -->
             </div>
 
@@ -216,6 +216,24 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     $(document).ready(function() {
       var interface = new ifs.InterfaceModel(ko);
       ko.applyBindings(interface /*, document.getElementById("serverlist") */);
+
+
+      // From: http://electron.atom.io/docs/api/browser-window/#event-close
+      // This event is fired just after the BrowserWindow 'close' event, but because it's
+      // part of the browser API (not the Electron API), it also gets called when the app
+      // is reloaded. This means this is the ONLY trap we need to ensure that a close or
+      // a refresh is treated in exactly the same way -- run interface.quitProgram just
+      // before emptying everything from memory.
+      window.onbeforeunload = (e) => {
+        interface.quitProgram();
+
+        // Unlike usual browsers that a message box will be prompted to users, returning
+        // a non-void value will silently cancel the close.
+        // It is recommended to use the dialog API to let the user confirm closing the
+        // application.
+        // e.returnValue = false; // This will ensure the app cannot be closed.
+      };
+
     });
 
     </script>
