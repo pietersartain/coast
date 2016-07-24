@@ -186,14 +186,13 @@ function ServerModel(server_name, nick_name, server_addr, ko, db) {
         self.selectChannel(cidx);
       }
     },
-    me: function(action){
+    me: function(/* action */){
+      var args = Array.prototype.slice.call(arguments);
+      var action = args.shift();
       if (action != '') {
         client.action(getCurrentFQChannelName(), "")
       }
     },
-    save: function() {
-      self.channels()[self.selected_channel()].saveNewMessages();
-    }
   };
 
   self.logError = function(message) {
@@ -218,7 +217,9 @@ function ServerModel(server_name, nick_name, server_addr, ko, db) {
   });
 
   // Emitted when the server sends the message of the day to clients.
-  client.addListener('motd', function(motd) {});
+  client.addListener('motd', function(motd) {
+    // self.logError("MOTD: " + motd);
+  });
 
   // Emitted when the server sends a list of nicks for a channel (which happens immediately after joining and on request. The nicks object passed to the callback is keyed by nick names, and has values ‘’, ‘+’, or ‘@’ depending on the level of that nick in the channel.
   client.addListener('names', function(channel, nicks) {
@@ -363,7 +364,9 @@ function ServerModel(server_name, nick_name, server_addr, ko, db) {
   //     serverinfo: "The Dollyfish Underworld",
   //     operator: "is an IRC Operator"
   // }
-  client.addListener('whois', function(info) {});
+  client.addListener('whois', function(info) {
+    // self.logError("WHOIS finished: " + info);
+  });
 
   // client.addListener('channellist_item', function(info) {
   //   console.log("channellist_item: ", info);

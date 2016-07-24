@@ -40,6 +40,8 @@ function ChannelModel(prefix, channel_name, nick_name, ko, db) {
   }, 1000 * (300 + get_number_between_1_50()) ); // Every 5 minutes + a bit.
 
   self.moment = require('moment')
+  self.linkifyHTML = require('linkifyjs/html')
+  // self.linkify = require('linkify')
   message_appendable = false;
 
   self.addMessage = function(from, message, type) {
@@ -48,15 +50,22 @@ function ChannelModel(prefix, channel_name, nick_name, ko, db) {
         last_poster = self.messages()[self.messages().length - 1].from;
     }
 
+    // Ensures links are always clickable
+    linked_message = self.linkifyHTML(message, {});
+
     if ( (from == last_poster) && message_appendable) {
-        // Append
-        self.messages()[self.messages().length - 1].fragments.push(
-          {'message':ko.observable(message), 'type':ko.observable(type)}
-        );
+        append_to_last_message(linked_message, type);
     } else {
-        post_new_message(from, message, type);
+        post_new_message(from, linked_message, type);
         reset_message_appendable();
     }
+
+    // We found some links, now we need to add a little somethin' somethin' for live previews
+    // if (linked_message != message) {
+    //   var links = self.linkify.find(message, ['url']);
+    //   append_to_last_message(, 'link');
+    // }
+
     self.updateScroll();
   };
 
@@ -79,6 +88,12 @@ function ChannelModel(prefix, channel_name, nick_name, ko, db) {
           ])
     });
   };
+
+  function append_to_last_message(message, type) {
+    self.messages()[self.messages().length - 1].fragments.push(
+          {'message':ko.observable(message), 'type':ko.observable(type)}
+        );
+  }
 
   function get_number_between_1_50() {
     return Math.floor(

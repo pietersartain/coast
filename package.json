@@ -36,6 +36,7 @@
     "diskdb": "^0.1.15",
     "hogan.js": "",
     "irc": "",
+    "linkifyjs": "^2.0.5",
     "moment": "^2.13.0"
   }
 }
