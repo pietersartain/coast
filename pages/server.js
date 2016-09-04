@@ -44,6 +44,8 @@ function ServerModel(server_name, nick_name, server_addr, ko, db) {
 
   self.connected = ko.observable(false);
 
+  self.whois = ko.observable();
+
   self.irc = require('irc')
 
   // Connect to the server
@@ -53,6 +55,11 @@ function ServerModel(server_name, nick_name, server_addr, ko, db) {
         realName: 'Coast IRC client',
         channels: [],
       });
+
+  self.whoIsThis = function(nick) {
+    client.send("whois", nick);
+    $("#user_info_modal").modal('show');
+  };
 
   self.joinChannel = function(prefix, channel_name, offline) {
     self.db.loadCollections([self.server_name + "-" + channel_name]);
@@ -124,6 +131,20 @@ function ServerModel(server_name, nick_name, server_addr, ko, db) {
     return self.channels()[self.selected_channel()].prefix() + self.channels()[self.selected_channel()].channel_name();
   }
 
+  self.sendDM = function(whom, message) {
+    if (whom != '' && message != '') {
+      var cidx = getChannelIdx(whom);
+      if (cidx == -1) {
+        self.joinChannel("", whom, true);
+        self.saveChannel("", whom);
+        cidx = self.channels().length-1;
+      }
+      client.say(whom, message);
+      self.selectChannel(cidx);
+      return true;
+    }
+  }
+
   self.sendMessage = function(d, e) {
     var input_box = $("textarea.input");
 
@@ -174,17 +195,7 @@ function ServerModel(server_name, nick_name, server_addr, ko, db) {
       var args = Array.prototype.slice.call(arguments);
       var whom = args.shift();
       var message = args.join(" ");
-
-      if (whom != '' && message != '') {
-        var cidx = getChannelIdx(whom);
-        if (cidx == -1) {
-          self.joinChannel("", whom, true);
-          self.saveChannel("", whom);
-          cidx = self.channels().length-1;
-        }
-        client.say(whom, message);
-        self.selectChannel(cidx);
-      }
+      self.sendDM(whom, message);
     },
     me: function(/* action */){
       var args = Array.prototype.slice.call(arguments);
@@ -227,7 +238,9 @@ function ServerModel(server_name, nick_name, server_addr, ko, db) {
     var cidx = getChannelIdx(to);
 
     if (cidx != -1) {
-      self.channels()[cidx].channel_members(Object.keys(nicks).length);
+      Object.keys(nicks).forEach(function(element, index, array) {
+        self.channels()[cidx].channel_members.push(element);
+      });
     }
   });
 
@@ -247,9 +260,12 @@ function ServerModel(server_name, nick_name, server_addr, ko, db) {
     var cidx = getChannelIdx(to);
 
     if (cidx != -1) {
+      
+      if (self.channels()[cidx].channel_members.indexOf(nick) != -1) {
+        self.channels()[cidx].channel_members.push(nick);
+      }
+
       self.channels()[cidx].addMessage(nick, "joined " + channel + ".", "system");
-      var cmem = self.channels()[cidx].channel_members();
-      self.channels()[cidx].channel_members(cmem + 1);
     }
   });
 
@@ -259,15 +275,7 @@ function ServerModel(server_name, nick_name, server_addr, ko, db) {
     var cidx = getChannelIdx(to);
 
     if (cidx != -1) {
-      var leaving_message = "left " + channel;
-      if (reason) {
-       leaving_message = leaving_message + " with a '" + reason + "'";
-      } else {
-        leaving_message = leaving_message + ".";
-      }
-      self.channels()[cidx].addMessage(nick, leaving_message, "system");
-      var cmem = self.channels()[cidx].channel_members();
-      self.channels()[cidx].channel_members(cmem - 1);
+      self.channels()[cidx].nickLeft(nick, reason);
     }
   });
 
@@ -278,15 +286,7 @@ function ServerModel(server_name, nick_name, server_addr, ko, db) {
       var cidx = getChannelIdx(to);
 
       if (cidx != -1) {
-        var leaving_message = "quit " + channel;
-        if (reason) {
-         leaving_message = leaving_message + " with a '" + reason + "'";
-        } else {
-          leaving_message = leaving_message + ".";
-        }
-        self.channels()[cidx].addMessage(nick, leaving_message, "system");
-        var cmem = self.channels()[cidx].channel_members();
-        self.channels()[cidx].channel_members(cmem - 1);
+        self.channels()[cidx].nickLeft(nick, reason);
       }
     }
   });
@@ -366,6 +366,8 @@ function ServerModel(server_name, nick_name, server_addr, ko, db) {
   // }
   client.addListener('whois', function(info) {
     // self.logError("WHOIS finished: " + info);
+    // console.log(info);
+    self.whois(info);
   });
 
   // client.addListener('channellist_item', function(info) {

@@ -36,6 +36,10 @@ body {
     color: silver;
 }
 
+.hidden {
+    visibility: hidden;
+}
+
 /* serverlist */
 #serverlist {
     position: absolute;
@@ -208,6 +212,20 @@ li {
     max-height: 160px;
     width: 100%;
     margin-left: ;
+}
+
+#channel-info {
+    position: absolute;
+    right: 0px;
+    width: 230px;
+    top: 60px;
+    border: 0px solid #e0e0e0;
+    border-left-width: 1px;
+    height: calc(100% - 120px);
+    padding: 10px;
+    font-size: small;
+    z-index: 2;
+    overflow-y: auto;
 }
 
 /* message */

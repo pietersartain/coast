@@ -28,7 +28,7 @@ function ChannelModel(prefix, channel_name, nick_name, ko, db) {
 
   self.channel_name = ko.observable(channel_name);
   self.channel_topic = ko.observable();
-  self.channel_members = ko.observable();
+  self.channel_members = ko.observableArray([]);
   self.nick_name = nick_name;
   self.messages = ko.observableArray([]);
   self.unread = ko.observable(false);
@@ -43,6 +43,10 @@ function ChannelModel(prefix, channel_name, nick_name, ko, db) {
   self.linkifyHTML = require('linkifyjs/html')
   // self.linkify = require('linkify')
   message_appendable = false;
+
+  self.channel_member_count = ko.computed(function() {
+        return self.channel_members().length;
+    }, self);
 
   self.addMessage = function(from, message, type) {
     var last_poster;
@@ -67,6 +71,18 @@ function ChannelModel(prefix, channel_name, nick_name, ko, db) {
     // }
 
     self.updateScroll();
+  };
+
+  self.nickLeft = function(nick, reason) {
+
+    var leaving_message = "left " + channel;
+    if (reason) {
+     leaving_message = leaving_message + " with a '" + reason + "'";
+    } else {
+      leaving_message = leaving_message + ".";
+    }
+    self.addMessage(nick, leaving_message, "system");
+    self.channel_members.splice(self.channel_members.indexOf(nick), 1);
   };
 
   // Private functions

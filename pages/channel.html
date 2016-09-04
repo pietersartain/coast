@@ -94,9 +94,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         </div>
 
         <div id="channel" data-bind="with: channels()[selected_channel()]">
-          <h2 id="channel-header" data-bind="html: channel_name"></h2>
+          <h2 id="channel-header" 
+            data-bind="click: function(data, event) { $('#channel-info').toggleClass('hidden'); },
+              html: channel_name"
+            class="clickable"></h2>
           <div class="channel-subhead">
-            <span class="channel-members" data-bind="html: channel_members"></span>
+            <span class="channel-members" data-bind="html: channel_member_count"></span>
             <span class="channel-topic" data-bind="html: channel_topic"></span>
           </div>
           <div id="channel-content" data-bind="foreach: messages">
@@ -114,11 +117,28 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
           <div id="channel-input">
             <textarea class="input" data-bind="event: { keyup: $root.servers()[$root.selected_server()].sendMessage }"></textarea>
           </div>
+
+          <div id="channel-info" class="hidden">
+            <h2>About #<span data-bind="html: channel_name"></span>
+              <a data-bind="click: function(data, event) { $('#channel-info').toggleClass('hidden'); }">X</a>
+            </h2>
+            <h2><span data-bind="html: channel_member_count"></span> Members</h2>
+            <div data-bind="foreach: channel_members" >
+                <li data-bind="click: function(data, event) { $root.servers()[$root.selected_server()].whoIsThis($data); }"
+                    class="clickable channel-info">
+                  <span class="user_icon channel_dm_icon"></span>
+                  <span class="user_name" data-bind="html: $data"></span>
+                </li>
+            </div>
+          </div>
+
         </div>
         <!-- /ko -->
 
       </div>
     </div>
+
+<!-- Modals -->
 
     <div class="modal fade" id="server_modal" data-keyboard="false" data-backdrop="static">
       <div class="modal-dialog" role="document">
@@ -171,7 +191,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       </div><!-- /.modal-dialog -->
     </div><!-- /.modal -->
 
-    <div class="modal fade" id="channel_modal">
+    <div class="modal fade" id="pm_modal">
       <div class="modal-dialog" role="document">
         <div class="modal-content">
           <div class="modal-header">
@@ -193,6 +213,36 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
           </div>
           <div class="modal-footer">
             
+          </div>
+        </div><!-- /.modal-content -->
+      </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+
+    <div class="modal fade" id="user_info_modal" data-bind="with: whois()">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+            <h4 class="modal-title" data-bind="html: nick"></h4>
+          </div>
+          <div class="modal-body">
+
+            <div data-bind="html: nick"></div>
+            <div data-bind="html: user"></div>
+            <div data-bind="html: host"></div>
+            <div data-bind="html: realname"></div>
+            <div data-bind="html: server"></div>
+            <div data-bind="html: serverinfo"></div>
+
+            <h5>Channel List</h5>
+            <div data-bind="foreach: channels">
+              <li data-bind="html: $data"></li>
+            </div>
+
+          </div>
+          <div class="modal-footer">
           </div>
         </div><!-- /.modal-content -->
       </div><!-- /.modal-dialog -->
